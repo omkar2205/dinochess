@@ -1,0 +1,81 @@
+      flipped = Boolean(saved.flipped);
+      soundEnabled = saved.soundEnabled !== false;
+      difficultySelect.value = String(saved.difficulty || "2");
+      dialogDifficulty.value = difficultySelect.value;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function bindEvents() {
+    $("#newGameButton").addEventListener("click", () => {
+      newGame({ side: playerColor, difficulty: difficultySelect.value });
+      showToast("A fresh board is ready.");
+    });
+    $("#undoButton").addEventListener("click", undoTurn);
+    $("#rotateButton").addEventListener("click", rotateBoard);
+    $("#soundButton").addEventListener("click", (event) => {
+      soundEnabled = !soundEnabled;
+      event.currentTarget.textContent = `Sound: ${soundEnabled ? "on" : "off"}`;
+      event.currentTarget.setAttribute("aria-pressed", String(soundEnabled));
+      saveGame();
+    });
+    $("#helpButton").addEventListener("click", () => helpDialog.showModal());
+
+    difficultySelect.addEventListener("change", () => {
+      dialogDifficulty.value = difficultySelect.value;
+      syncPlayerLabels();
+      saveGame();
+      showToast("Computer strength updated for its next move.");
+    });
+    dialogDifficulty.addEventListener("change", () => { difficultySelect.value = dialogDifficulty.value; });
+
+    $$(`[data-side]`).forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextSide = button.dataset.side;
+        const isDialogChoice = Boolean(button.closest("#startDialog"));
+        playerColor = nextSide;
+        syncSideControls();
+        if (!isDialogChoice) {
+          newGame({ side: nextSide, difficulty: difficultySelect.value });
+          showToast(`New game started as the ${colorName(nextSide)}.`);
+        }
+      });
+    });
+
+    $("#startButton").addEventListener("click", (event) => {
+      event.preventDefault();
+      difficultySelect.value = dialogDifficulty.value;
+      startDialog.close();
+      newGame({ side: playerColor, difficulty: dialogDifficulty.value });
+      try { localStorage.setItem("dinoChessWelcomed", "true"); } catch (error) { /* ignore */ }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        selected = null;
+        selectedMoves = [];
+        renderBoard();
+      }
+    });
+  }
+
+  function init() {
+    renderRoster();
+    bindEvents();
+    const loaded = loadGame();
+    syncSideControls();
+    syncPlayerLabels();
+    $("#soundButton").textContent = `Sound: ${soundEnabled ? "on" : "off"}`;
+    $("#soundButton").setAttribute("aria-pressed", String(soundEnabled));
+    renderBoard();
+
+    let welcomed = false;
+    try { welcomed = localStorage.getItem("dinoChessWelcomed") === "true"; } catch (error) { /* ignore */ }
+    if (!welcomed && startDialog.showModal) startDialog.showModal();
+    if (loaded && !game.result && game.turn !== playerColor) scheduleAiMove();
+  }
+
+  init();
+})();
