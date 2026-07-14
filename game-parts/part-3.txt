@@ -93,60 +93,72 @@
   }
 
   function dinosaurSVG(type) {
-    const sharedStart = `<svg class="dino-svg" viewBox="0 0 100 100" aria-hidden="true"><g class="dino-motion" fill="var(--dino-main)" stroke="var(--dino-accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">`;
-    const sharedEnd = `</g></svg>`;
-    const eye = `<circle cx="50" cy="23" r="2.2" fill="var(--dino-eye)" stroke="none"/>`;
+    const start = `<svg class="dino-svg" viewBox="0 0 100 100" aria-hidden="true"><g class="dino-motion">`;
+    const end = `</g></svg>`;
     const shapes = {
-      p: `${sharedStart}
-        <path d="M48 68 C37 73 27 76 16 76 C29 69 34 63 39 55 Z"/>
-        <ellipse cx="50" cy="53" rx="14" ry="20"/>
-        <ellipse cx="50" cy="29" rx="9" ry="11"/>
-        <path class="leg" d="M42 62 L34 75 M58 62 L66 75"/>
-        <path class="leg alt" d="M43 45 L35 37 M57 45 L65 37"/>
-        ${eye}
-      ${sharedEnd}`,
-      n: `${sharedStart}
-        <path d="M48 70 C34 78 20 81 8 78 C26 69 34 61 40 51 Z"/>
-        <ellipse cx="51" cy="53" rx="16" ry="22"/>
-        <path d="M44 34 C45 23 53 16 64 17 C58 22 58 29 61 35 Z"/>
-        <ellipse cx="56" cy="29" rx="12" ry="9"/>
-        <path class="leg" d="M42 62 L29 75 L37 77 M60 61 L73 73 L65 78"/>
-        <path class="leg alt" d="M43 47 L31 39 M60 47 L71 37"/>
-        <path d="M32 75 l-4 5 m45-7 4 5"/>
-        <circle cx="61" cy="27" r="2.2" fill="var(--dino-eye)" stroke="none"/>
-      ${sharedEnd}`,
-      b: `${sharedStart}
-        <path d="M48 70 C42 77 35 81 27 82 L42 58 Z"/>
-        <ellipse cx="50" cy="50" rx="10" ry="25"/>
-        <path d="M43 43 C29 29 14 27 7 34 C20 39 28 50 38 59 Z"/>
-        <path d="M57 43 C71 29 86 27 93 34 C80 39 72 50 62 59 Z"/>
-        <path d="M45 29 L50 13 L55 29 Z"/>
-        <path class="leg" d="M45 62 L37 74 M55 62 L63 74"/>
-        ${eye}
-      ${sharedEnd}`,
-      r: `${sharedStart}
-        <path d="M50 72 C36 77 23 79 10 76 L34 60 Z"/>
-        <ellipse cx="51" cy="51" rx="23" ry="24"/>
-        <ellipse cx="50" cy="26" rx="13" ry="10"/>
-        <path d="M31 42 l8-9 7 8 7-10 8 10 8-7 5 11" fill="var(--dino-accent)"/>
-        <circle cx="22" cy="69" r="7" fill="var(--dino-accent)"/>
-        <path class="leg" d="M36 61 L25 72 M65 61 L76 72"/>
-        <path class="leg alt" d="M36 45 L24 36 M65 45 L77 36"/>
-        ${eye}
-      ${sharedEnd}`,
-      q: `${sharedStart}
-        <path d="M49 75 C36 80 22 82 9 79 C28 69 35 59 40 49 Z"/>
-        <ellipse cx="51" cy="53" rx="18" ry="25"/>
-        <ellipse cx="51" cy="25" rx="13" ry="11"/>
-        <path d="M39 55 L28 48 L39 43 L27 36 L42 33 L50 42 L58 31 L73 36 L61 43 L74 50 L61 56" fill="var(--dino-accent)"/>
-        <path class="leg" d="M40 64 L28 76 M62 64 L74 76"/>
-        <path class="leg alt" d="M40 46 L29 38 M62 46 L73 38"/>
-        ${eye}
-      ${sharedEnd}`,
-      k: `${sharedStart}
-        <path d="M49 75 C34 81 20 82 8 78 C26 69 34 60 39 49 Z"/>
-        <ellipse cx="51" cy="54" rx="20" ry="25"/>
-        <path d="M36 29 C38 17 46 12 57 13 C69 14 74 21 72 31 C66 38 59 41 48 39 C41 37 37 34 36 29 Z"/>
-        <path d="M39 19 L43 8 L50 17 L57 7 L62 19" fill="var(--dino-accent)"/>
-        <path class="leg" d="M38 65 L25 78 M64 65 L77 78"/>
-        <path class="leg alt" d="M37 46 L28 43 M65 46 L73 43"/>
+      p: `${start}
+        <path class="skin" d="M45 71 C34 78 22 82 10 80 C24 72 33 64 39 55 C39 47 42 40 48 36 C45 31 46 24 51 21 C57 19 62 22 63 27 C64 32 61 36 57 39 C63 43 66 51 64 59 C62 67 55 72 45 71 Z"/>
+        <path class="dino-shadow" d="M42 69 C49 67 55 62 57 55 C59 48 57 43 53 39 C59 37 61 31 59 26 C63 30 63 35 58 39 C64 44 67 52 64 60 C61 68 53 73 42 72 Z"/>
+        <path class="dino-highlight" d="M44 52 C44 44 48 39 53 38 C49 43 48 49 49 57 C49 62 46 66 41 69 C44 64 45 59 44 52 Z"/>
+        <path class="armor" d="M47 42 C51 39 55 39 59 42 L57 48 C53 46 50 46 47 48 Z"/>
+        <path class="detail-line" d="M42 49 C48 51 55 51 61 48 M42 56 C49 58 56 58 63 54"/>
+        <path class="leg" d="M43 56 L34 64 L29 62 M58 56 L68 64 L73 61"/>
+        <path class="leg alt" d="M44 48 L34 43 L30 46 M59 48 L69 42 L73 45"/>
+        <circle class="eye" cx="56" cy="27" r="2"/>
+      ${end}`,
+      n: `${start}
+        <path class="skin" d="M43 73 C29 81 17 84 6 81 C21 73 31 64 38 53 C39 43 43 36 50 32 C47 26 49 19 56 16 C65 13 74 17 77 23 C79 28 76 33 70 36 C63 38 58 39 54 42 C63 47 67 55 64 63 C61 71 53 75 43 73 Z"/>
+        <path class="dino-shadow" d="M42 70 C51 70 58 65 59 58 C61 51 57 45 51 42 C58 37 65 36 70 33 C76 30 77 25 74 21 C80 25 79 31 73 35 C67 39 61 39 57 43 C65 49 69 57 65 65 C61 73 52 77 42 74 Z"/>
+        <path class="dino-highlight" d="M45 51 C45 43 49 37 55 34 C51 40 51 48 55 54 C56 60 52 66 45 69 C49 63 49 57 45 51 Z"/>
+        <path class="armor" d="M51 32 L59 24 L67 24 L61 32 Z"/>
+        <path class="scale-mark" d="M44 46 C50 48 57 48 63 45 M43 54 C50 57 57 57 64 53"/>
+        <path class="leg" d="M42 58 L29 69 L22 68 M59 58 L72 70 L80 68"/>
+        <path class="leg alt" d="M43 46 L31 39 L25 43 M61 45 L72 36 L79 39"/>
+        <path class="detail-line" d="M22 68 L18 75 M80 68 L84 75"/>
+        <circle class="eye" cx="68" cy="23" r="2.2"/>
+      ${end}`,
+      b: `${start}
+        <path class="skin" d="M45 72 C40 78 34 82 26 84 L40 60 C42 55 43 49 43 42 C35 40 25 34 15 27 C10 23 8 19 10 16 C23 17 34 21 45 29 C46 21 48 14 51 9 C55 16 57 23 57 30 C68 22 79 18 92 18 C93 22 90 26 85 30 C75 37 66 41 58 43 C58 51 59 57 61 62 L73 84 C65 82 59 78 55 72 C52 74 48 74 45 72 Z"/>
+        <path class="dino-shadow" d="M50 33 C63 29 75 23 89 20 C83 28 72 37 58 42 C57 50 59 58 65 70 C58 67 54 62 52 56 C51 64 48 69 43 73 C47 61 46 49 45 40 C32 36 20 29 12 19 C27 23 38 28 50 33 Z"/>
+        <path class="dino-highlight" d="M18 20 C30 22 40 26 47 33 C35 31 25 27 18 20 M84 21 C72 23 63 27 56 34 C68 31 77 27 84 21 Z"/>
+        <path class="armor" d="M47 30 L51 10 L56 31 L52 39 Z"/>
+        <path class="detail-line" d="M21 26 C29 27 37 31 43 37 M80 27 C72 29 64 33 58 38"/>
+        <path class="leg" d="M45 60 L35 70 M57 60 L67 70"/>
+        <circle class="eye" cx="52" cy="18" r="1.7"/>
+      ${end}`,
+      r: `${start}
+        <path class="skin" d="M43 73 C31 80 18 82 7 78 C23 70 31 63 37 56 C34 47 36 37 42 31 C39 27 40 22 44 18 C49 14 57 14 62 18 C66 21 67 26 65 31 C71 37 73 47 70 56 C67 67 57 74 43 73 Z"/>
+        <path class="dino-shadow" d="M45 70 C57 69 64 63 66 54 C69 45 66 37 60 31 C65 27 64 21 60 18 C67 21 69 28 64 32 C72 39 75 48 71 58 C67 69 56 76 43 74 Z"/>
+        <path class="armor" d="M38 39 L44 31 L50 36 L55 27 L61 36 L67 31 L72 42 L66 48 L72 55 L64 61 L57 56 L51 65 L45 57 L36 61 L32 51 Z"/>
+        <path class="dino-highlight" d="M42 36 C47 31 54 29 60 32 C53 34 48 39 46 46 C44 54 47 62 53 68 C43 64 38 56 38 47 C38 42 39 39 42 36 Z"/>
+        <path class="scale-mark" d="M42 43 L49 39 L56 43 L63 39 M39 51 L47 48 L55 52 L64 48 M43 59 L51 55 L59 59"/>
+        <path class="leg" d="M39 57 L26 68 M66 57 L79 68"/>
+        <path class="leg alt" d="M40 43 L27 34 M66 43 L79 34"/>
+        <path class="armor" d="M17 68 C11 68 7 72 8 78 C11 84 20 85 26 80 C28 76 25 71 17 68 Z"/>
+        <circle class="eye" cx="54" cy="21" r="2"/>
+      ${end}`,
+      q: `${start}
+        <path class="skin" d="M43 75 C29 82 17 84 6 81 C23 72 32 63 38 52 C37 43 41 34 48 29 C45 24 47 17 53 14 C60 11 69 14 72 20 C75 26 72 31 66 35 C61 38 57 39 54 43 C64 48 69 57 66 66 C63 74 54 78 43 75 Z"/>
+        <path class="dino-shadow" d="M43 72 C54 72 61 66 61 58 C62 51 58 45 52 42 C59 37 66 35 70 30 C74 25 72 19 67 16 C76 20 78 28 71 34 C66 39 61 40 57 44 C66 50 70 59 66 68 C62 77 52 80 42 76 Z"/>
+        <path class="armor" d="M40 58 L30 53 L40 47 L28 40 L42 36 L35 27 L50 30 L53 17 L59 30 L72 25 L66 38 L78 42 L66 49 L76 56 L63 59 L60 68 L50 61 Z"/>
+        <path class="dino-highlight" d="M44 35 C50 29 58 28 64 32 C56 34 51 40 49 48 C47 56 50 64 57 70 C46 67 40 58 40 48 C40 42 41 38 44 35 Z"/>
+        <path class="scale-mark" d="M43 42 C49 44 56 44 63 40 M41 51 C49 54 57 54 65 50 M43 60 C50 62 57 62 63 59"/>
+        <path class="leg" d="M40 60 L26 72 M63 60 L77 72"/>
+        <path class="leg alt" d="M40 45 L27 37 M65 45 L78 36"/>
+        <circle class="eye" cx="64" cy="21" r="2.2"/>
+      ${end}`,
+      k: `${start}
+        <path class="skin" d="M43 76 C28 83 16 85 5 81 C22 72 31 63 37 52 C36 43 39 35 46 30 C41 25 42 17 49 12 C58 6 71 9 78 17 C84 24 81 32 74 37 C67 42 59 41 55 45 C65 50 70 59 67 67 C64 76 54 80 43 76 Z"/>
+        <path class="dino-shadow" d="M43 73 C54 73 62 67 62 59 C63 51 59 46 52 43 C60 38 69 39 75 34 C82 29 82 22 77 16 C86 22 86 31 77 38 C70 43 62 43 58 46 C67 52 71 61 67 70 C63 79 52 82 42 77 Z"/>
+        <path class="dino-highlight" d="M47 32 C54 25 63 22 72 25 C62 27 55 34 52 42 C50 51 53 61 60 68 C48 65 41 56 41 46 C41 40 43 35 47 32 Z"/>
+        <path class="armor" d="M47 17 L48 6 L55 13 L62 3 L66 14 L75 9 L73 21 C66 17 57 15 47 17 Z"/>
+        <path class="detail-line" d="M61 34 C67 36 73 34 78 29 M62 37 L76 38 M60 31 L67 27"/>
+        <path class="scale-mark" d="M43 43 C50 46 58 46 65 42 M41 52 C49 56 58 56 66 51 M44 61 C51 64 58 64 64 61"/>
+        <path class="leg" d="M40 61 L25 74 M65 61 L80 74"/>
+        <path class="leg alt" d="M39 46 L27 42 M66 46 L78 42"/>
+        <circle class="eye" cx="69" cy="21" r="2.5"/>
+      ${end}`
+    };
+    return shapes[type];
+  }
+
