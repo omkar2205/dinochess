@@ -13,8 +13,9 @@ A browser-only, single-player chess game where classic pieces are redesigned as 
 
 - Standard legal movement, check, checkmate, castling, en passant, promotion and stalemate
 - Three computer difficulty levels
-- Original top-down SVG dinosaur pieces
+- Layered top-down dinosaur miniatures with highlights, shadows, armour details and raised bases
 - Idle and running movement animations
+- Ancient stone chessboard with jungle atmosphere and torch effects
 - Responsive mobile and desktop interface
 - Move history, undo, board rotation and generated sound effects
 - Automatic local browser saving
@@ -36,7 +37,7 @@ The included workflow deploys the root folder whenever `main` is updated. In the
 
 ## Current scope
 
-This is the first playable prototype. The dinosaur artwork is original lightweight SVG rather than frame-by-frame illustrated sprite sheets. It can later be replaced with higher-detail top-down idle, run and attack sprite sets without changing the chess engine.
+This version uses original, layered SVG miniature artwork to create a lightweight 2.5D appearance without external assets. Fully rendered frame-by-frame idle, run and attack sprite sheets can later replace the SVG art without changing the chess engine.
 
 ## Licence
 
