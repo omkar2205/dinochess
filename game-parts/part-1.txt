@@ -1,0 +1,218 @@
+(() => {
+  "use strict";
+
+  const FILES = "abcdefgh";
+  const PIECE_NAMES = {
+    k: "T-Rex",
+    q: "Spinosaurus",
+    r: "Ankylosaurus",
+    b: "Pteranodon",
+    n: "Velociraptor",
+    p: "Compsognathus"
+  };
+  const ROLE_NAMES = { k: "King", q: "Queen", r: "Rook", b: "Bishop", n: "Knight", p: "Pawn" };
+  const ROLE_RUNES = { k: "K", q: "Q", r: "R", b: "B", n: "N", p: "P" };
+  const VALUES = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
+  const DINO_ORDER = ["k", "q", "r", "b", "n", "p"];
+
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+  const boardEl = $("#board");
+  const moveLayer = $("#moveLayer");
+  const historyList = $("#historyList");
+  const moveCount = $("#moveCount");
+  const statusText = $("#statusText");
+  const turnLabel = $("#turnLabel");
+  const statusIcon = $("#statusIcon");
+  const statusCard = $(".status-card");
+  const thinkingIndicator = $("#thinkingIndicator");
+  const opponentName = $("#opponentName");
+  const opponentRole = $("#opponentRole");
+  const playerName = $("#playerName");
+  const playerStrip = $("#playerStrip");
+  const opponentStrip = $("#opponentStrip");
+  const difficultySelect = $("#difficulty");
+  const dialogDifficulty = $("#dialogDifficulty");
+  const startDialog = $("#startDialog");
+  const helpDialog = $("#helpDialog");
+  const toast = $("#toast");
+
+  let game = createInitialState();
+  let playerColor = "w";
+  let selected = null;
+  let selectedMoves = [];
+  let flipped = false;
+  let inputLocked = false;
+  let soundEnabled = true;
+  let aiTimer = null;
+  let toastTimer = null;
+
+  function emptyBoard() {
+    return Array.from({ length: 8 }, () => Array(8).fill(null));
+  }
+
+  function piece(type, color) {
+    return { type, color, moved: false };
+  }
+
+  function createInitialState() {
+    const board = emptyBoard();
+    const backRank = ["r", "n", "b", "q", "k", "b", "n", "r"];
+    for (let c = 0; c < 8; c += 1) {
+      board[0][c] = piece(backRank[c], "b");
+      board[1][c] = piece("p", "b");
+      board[6][c] = piece("p", "w");
+      board[7][c] = piece(backRank[c], "w");
+    }
+    return {
+      board,
+      turn: "w",
+      enPassant: null,
+      halfmove: 0,
+      fullmove: 1,
+      history: [],
+      moveLog: [],
+      lastMove: null,
+      result: null
+    };
+  }
+
+  function cloneState(state, includeHistory = false) {
+    return {
+      board: state.board.map((row) => row.map((p) => (p ? { ...p } : null))),
+      turn: state.turn,
+      enPassant: state.enPassant ? { ...state.enPassant } : null,
+      halfmove: state.halfmove,
+      fullmove: state.fullmove,
+      history: includeHistory ? state.history.map((h) => cloneState(h, false)) : [],
+      moveLog: includeHistory ? state.moveLog.map((m) => ({ ...m })) : state.moveLog.map((m) => ({ ...m })),
+      lastMove: state.lastMove ? { ...state.lastMove } : null,
+      result: state.result ? { ...state.result } : null
+    };
+  }
+
+  function coordToSquare(r, c) {
+    return `${FILES[c]}${8 - r}`;
+  }
+
+  function squareToCoord(square) {
+    return { r: 8 - Number(square[1]), c: FILES.indexOf(square[0]) };
+  }
+
+  function inBounds(r, c) {
+    return r >= 0 && r < 8 && c >= 0 && c < 8;
+  }
+
+  function opposite(color) {
+    return color === "w" ? "b" : "w";
+  }
+
+  function colorName(color) {
+    return color === "w" ? "Ivory Herd" : "Obsidian Pack";
+  }
+
+  function findKing(state, color) {
+    for (let r = 0; r < 8; r += 1) {
+      for (let c = 0; c < 8; c += 1) {
+        const p = state.board[r][c];
+        if (p && p.color === color && p.type === "k") return { r, c };
+      }
+    }
+    return null;
+  }
+
+  function isSquareAttacked(state, r, c, byColor) {
+    const pawnDirection = byColor === "w" ? -1 : 1;
+    const pawnSourceRow = r - pawnDirection;
+    for (const dc of [-1, 1]) {
+      const sourceC = c - dc;
+      if (inBounds(pawnSourceRow, sourceC)) {
+        const p = state.board[pawnSourceRow][sourceC];
+        if (p && p.color === byColor && p.type === "p") return true;
+      }
+    }
+
+    const knightMoves = [
+      [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+      [1, -2], [1, 2], [2, -1], [2, 1]
+    ];
+    for (const [dr, dc] of knightMoves) {
+      const rr = r + dr;
+      const cc = c + dc;
+      if (!inBounds(rr, cc)) continue;
+      const p = state.board[rr][cc];
+      if (p && p.color === byColor && p.type === "n") return true;
+    }
+
+    for (let dr = -1; dr <= 1; dr += 1) {
+      for (let dc = -1; dc <= 1; dc += 1) {
+        if (!dr && !dc) continue;
+        const rr = r + dr;
+        const cc = c + dc;
+        if (!inBounds(rr, cc)) continue;
+        const p = state.board[rr][cc];
+        if (p && p.color === byColor && p.type === "k") return true;
+      }
+    }
+
+    const lines = [
+      { directions: [[-1, 0], [1, 0], [0, -1], [0, 1]], types: ["r", "q"] },
+      { directions: [[-1, -1], [-1, 1], [1, -1], [1, 1]], types: ["b", "q"] }
+    ];
+    for (const line of lines) {
+      for (const [dr, dc] of line.directions) {
+        let rr = r + dr;
+        let cc = c + dc;
+        while (inBounds(rr, cc)) {
+          const p = state.board[rr][cc];
+          if (p) {
+            if (p.color === byColor && line.types.includes(p.type)) return true;
+            break;
+          }
+          rr += dr;
+          cc += dc;
+        }
+      }
+    }
+    return false;
+  }
+
+  function inCheck(state, color) {
+    const king = findKing(state, color);
+    return king ? isSquareAttacked(state, king.r, king.c, opposite(color)) : false;
+  }
+
+  function makeMoveObject(fromR, fromC, toR, toC, extras = {}) {
+    return {
+      fromR,
+      fromC,
+      toR,
+      toC,
+      from: coordToSquare(fromR, fromC),
+      to: coordToSquare(toR, toC),
+      promotion: null,
+      castle: null,
+      enPassant: false,
+      ...extras
+    };
+  }
+
+  function pseudoMovesForPiece(state, r, c, includeCastle = true) {
+    const p = state.board[r][c];
+    if (!p) return [];
+    const moves = [];
+    const addStep = (rr, cc, extras = {}) => {
+      if (!inBounds(rr, cc)) return false;
+      const target = state.board[rr][cc];
+      if (!target) {
+        moves.push(makeMoveObject(r, c, rr, cc, extras));
+        return true;
+      }
+      if (target.color !== p.color) moves.push(makeMoveObject(r, c, rr, cc, { ...extras, capture: target.type }));
+      return false;
+    };
+
+    if (p.type === "p") {
+      const dir = p.color === "w" ? -1 : 1;
+      const startRow = p.color === "w" ? 6 : 1;
