@@ -1,0 +1,177 @@
+      const promotionRow = p.color === "w" ? 0 : 7;
+      const oneR = r + dir;
+      if (inBounds(oneR, c) && !state.board[oneR][c]) {
+        moves.push(makeMoveObject(r, c, oneR, c, oneR === promotionRow ? { promotion: "q" } : {}));
+        const twoR = r + dir * 2;
+        if (r === startRow && !p.moved && inBounds(twoR, c) && !state.board[twoR][c]) {
+          moves.push(makeMoveObject(r, c, twoR, c, { doublePawn: true }));
+        }
+      }
+      for (const dc of [-1, 1]) {
+        const rr = r + dir;
+        const cc = c + dc;
+        if (!inBounds(rr, cc)) continue;
+        const target = state.board[rr][cc];
+        if (target && target.color !== p.color) {
+          moves.push(makeMoveObject(r, c, rr, cc, {
+            capture: target.type,
+            promotion: rr === promotionRow ? "q" : null
+          }));
+        } else if (state.enPassant && state.enPassant.r === rr && state.enPassant.c === cc) {
+          moves.push(makeMoveObject(r, c, rr, cc, { enPassant: true, capture: "p" }));
+        }
+      }
+      return moves;
+    }
+
+    if (p.type === "n") {
+      for (const [dr, dc] of [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]]) {
+        addStep(r + dr, c + dc);
+      }
+      return moves;
+    }
+
+    if (["b", "r", "q"].includes(p.type)) {
+      const directions = [];
+      if (["b", "q"].includes(p.type)) directions.push([-1, -1], [-1, 1], [1, -1], [1, 1]);
+      if (["r", "q"].includes(p.type)) directions.push([-1, 0], [1, 0], [0, -1], [0, 1]);
+      for (const [dr, dc] of directions) {
+        let rr = r + dr;
+        let cc = c + dc;
+        while (inBounds(rr, cc)) {
+          if (!addStep(rr, cc)) break;
+          rr += dr;
+          cc += dc;
+        }
+      }
+      return moves;
+    }
+
+    if (p.type === "k") {
+      for (let dr = -1; dr <= 1; dr += 1) {
+        for (let dc = -1; dc <= 1; dc += 1) {
+          if (!dr && !dc) continue;
+          addStep(r + dr, c + dc);
+        }
+      }
+      if (includeCastle && !p.moved && !inCheck(state, p.color)) {
+        const enemy = opposite(p.color);
+        const rookKingSide = state.board[r][7];
+        if (
+          rookKingSide && rookKingSide.type === "r" && rookKingSide.color === p.color && !rookKingSide.moved &&
+          !state.board[r][5] && !state.board[r][6] &&
+          !isSquareAttacked(state, r, 5, enemy) && !isSquareAttacked(state, r, 6, enemy)
+        ) {
+          moves.push(makeMoveObject(r, c, r, 6, { castle: "king" }));
+        }
+        const rookQueenSide = state.board[r][0];
+        if (
+          rookQueenSide && rookQueenSide.type === "r" && rookQueenSide.color === p.color && !rookQueenSide.moved &&
+          !state.board[r][1] && !state.board[r][2] && !state.board[r][3] &&
+          !isSquareAttacked(state, r, 3, enemy) && !isSquareAttacked(state, r, 2, enemy)
+        ) {
+          moves.push(makeMoveObject(r, c, r, 2, { castle: "queen" }));
+        }
+      }
+      return moves;
+    }
+
+    return moves;
+  }
+
+  function legalMoves(state, color = state.turn) {
+    const moves = [];
+    for (let r = 0; r < 8; r += 1) {
+      for (let c = 0; c < 8; c += 1) {
+        const p = state.board[r][c];
+        if (!p || p.color !== color) continue;
+        for (const move of pseudoMovesForPiece(state, r, c, true)) {
+          const test = cloneState(state, false);
+          applyMove(test, move, false);
+          if (!inCheck(test, color)) moves.push(move);
+        }
+      }
+    }
+    return moves;
+  }
+
+  function legalMovesFrom(state, r, c) {
+    return legalMoves(state, state.turn).filter((m) => m.fromR === r && m.fromC === c);
+  }
+
+  function applyMove(state, move, trackHistory = true) {
+    if (trackHistory) state.history.push(cloneState(state, false));
+    const moving = state.board[move.fromR][move.fromC];
+    const originalType = moving.type;
+    const movingColor = moving.color;
+    const captured = move.enPassant
+      ? state.board[move.fromR][move.toC]
+      : state.board[move.toR][move.toC];
+
+    state.board[move.fromR][move.fromC] = null;
+    if (move.enPassant) state.board[move.fromR][move.toC] = null;
+    state.board[move.toR][move.toC] = moving;
+    moving.moved = true;
+
+    if (move.castle === "king") {
+      const rook = state.board[move.toR][7];
+      state.board[move.toR][7] = null;
+      state.board[move.toR][5] = rook;
+      if (rook) rook.moved = true;
+    }
+    if (move.castle === "queen") {
+      const rook = state.board[move.toR][0];
+      state.board[move.toR][0] = null;
+      state.board[move.toR][3] = rook;
+      if (rook) rook.moved = true;
+    }
+
+    if (originalType === "p" && (move.toR === 0 || move.toR === 7)) moving.type = move.promotion || "q";
+
+    state.enPassant = null;
+    if (move.doublePawn) {
+      state.enPassant = { r: (move.fromR + move.toR) / 2, c: move.fromC };
+    }
+
+    if (originalType === "p" || captured) state.halfmove = 0;
+    else state.halfmove += 1;
+    if (state.turn === "b") state.fullmove += 1;
+
+    let notation = "";
+    if (trackHistory) {
+      notation = buildNotation(state, move, originalType, movingColor, captured);
+      state.moveLog.push({
+        color: state.turn,
+        notation,
+        from: move.from,
+        to: move.to,
+        piece: originalType,
+        captured: captured ? captured.type : null
+      });
+      state.lastMove = { from: move.from, to: move.to };
+    }
+    state.turn = opposite(state.turn);
+    state.result = trackHistory ? getGameResult(state) : null;
+    return { moving, captured, notation };
+  }
+
+  function buildNotation(stateAfterMove, move, originalType, movingColor, captured) {
+    if (move.castle === "king") return "O-O";
+    if (move.castle === "queen") return "O-O-O";
+    const letter = originalType === "p" ? "" : ROLE_RUNES[originalType];
+    const pawnFile = originalType === "p" && captured ? FILES[move.fromC] : "";
+    const captureMark = captured ? "×" : "";
+    const promotionMark = move.promotion ? `=${ROLE_RUNES[move.promotion]}` : "";
+    const checkMark = inCheck(stateAfterMove, opposite(movingColor)) ? "+" : "";
+    return `${letter}${pawnFile}${captureMark}${move.to}${promotionMark}${checkMark}`;
+  }
+
+  function getGameResult(state) {
+    const moves = legalMoves(state, state.turn);
+    if (moves.length === 0) {
+      if (inCheck(state, state.turn)) {
+        return { type: "checkmate", winner: opposite(state.turn) };
+      }
+      return { type: "stalemate", winner: null };
+    }
+    if (state.halfmove >= 100) return { type: "fifty-move", winner: null };
