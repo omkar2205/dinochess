@@ -1,0 +1,83 @@
+/* Style 5 — Fossil Bronze Totems
+   Static game-token artwork extracted from the approved reference direction. */
+
+.piece {
+  width: 106%;
+  height: 106%;
+  transform: none;
+  filter: drop-shadow(0 7px 5px rgba(0, 0, 0, .5));
+}
+
+.piece .dino-svg,
+.piece .role-rune {
+  display: none !important;
+}
+
+.piece::after {
+  display: none !important;
+}
+
+.piece::before {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: url("assets/style5-pieces.svg");
+  background-repeat: no-repeat;
+  background-size: 400% 300%;
+  box-shadow: none;
+  filter: none;
+}
+
+/* Row 1: kings and queens */
+.piece.white[data-type="k"]::before { background-position: 0% 0%; }
+.piece.black[data-type="k"]::before { background-position: 33.333% 0%; }
+.piece.white[data-type="q"]::before { background-position: 66.667% 0%; }
+.piece.black[data-type="q"]::before { background-position: 100% 0%; }
+
+/* Row 2: rooks and bishops */
+.piece.white[data-type="r"]::before { background-position: 0% 50%; }
+.piece.black[data-type="r"]::before { background-position: 33.333% 50%; }
+.piece.white[data-type="b"]::before { background-position: 66.667% 50%; }
+.piece.black[data-type="b"]::before { background-position: 100% 50%; }
+
+/* Row 3: knights and pawns */
+.piece.white[data-type="n"]::before { background-position: 0% 100%; }
+.piece.black[data-type="n"]::before { background-position: 33.333% 100%; }
+.piece.white[data-type="p"]::before { background-position: 66.667% 100%; }
+.piece.black[data-type="p"]::before { background-position: 100% 100%; }
+
+/* The approved artwork is static. Only the whole token glides between squares. */
+.dino-motion,
+.piece[data-type="n"] .dino-motion,
+.piece[data-type="p"] .dino-motion,
+.moving-piece.running .dino-motion,
+.moving-piece.running .leg,
+.moving-piece.running .leg.alt {
+  animation: none !important;
+}
+
+.moving-piece {
+  transition-duration: 300ms;
+}
+
+.moving-piece.running {
+  filter: drop-shadow(-9px 7px 6px rgba(0, 0, 0, .42));
+}
+
+.roster-icon .piece {
+  width: 118%;
+  height: 118%;
+}
+
+@media (max-width: 560px) {
+  .piece {
+    width: 109%;
+    height: 109%;
+  }
+}
