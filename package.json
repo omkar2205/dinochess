@@ -1,0 +1,11 @@
+{
+  "name": "dino-chess",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-only animated dinosaur chess against a local computer opponent.",
+  "scripts": {
+    "check": "node --check game.js",
+    "serve": "python3 -m http.server 8000"
+  },
+  "license": "MIT"
+}
