@@ -23,6 +23,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate game JavaScript
+        run: |
+          cat game-parts/part-*.txt > /tmp/dino-chess-source.js
+          node --check game.js
+          node --check /tmp/dino-chess-source.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
