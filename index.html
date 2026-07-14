@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#16251f" />
+  <meta name="description" content="Dino Chess — classic chess rules with animated prehistoric pieces and a browser-based computer opponent." />
+  <title>Dino Chess</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-noise" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Dino Chess home">
+      <span class="brand-mark" aria-hidden="true">🦖</span>
+      <span>
+        <strong>Dino Chess</strong>
+        <small>Classic rules. Prehistoric pieces.</small>
+      </span>
+    </a>
+    <div class="topbar-actions">
+      <span class="mode-pill">Player vs Computer</span>
+      <button class="icon-button" id="helpButton" type="button" aria-label="How to play">?</button>
+    </div>
+  </header>
+
+  <main class="game-layout">
+    <aside class="panel control-panel">
+      <section class="panel-section">
+        <p class="eyebrow">Expedition setup</p>
+        <h2>Choose your side</h2>
+        <div class="segmented" id="sideControl" role="group" aria-label="Choose side">
+          <button type="button" data-side="w" class="active">Ivory Herd</button>
+          <button type="button" data-side="b">Obsidian Pack</button>
+        </div>
+
+        <label class="field-label" for="difficulty">Computer strength</label>
+        <select id="difficulty">
+          <option value="1">Hatchling · Easy</option>
+          <option value="2" selected>Hunter · Medium</option>
+          <option value="3">Alpha · Hard</option>
+        </select>
+      </section>
+
+      <section class="status-card" aria-live="polite">
+        <div class="status-icon" id="statusIcon" aria-hidden="true">●</div>
+        <div>
+          <span id="turnLabel">Ivory Herd to move</span>
+          <strong id="statusText">Select a dinosaur</strong>
+        </div>
+      </section>
+
+      <section class="panel-section compact">
+        <div class="button-grid">
+          <button class="primary-button" id="newGameButton" type="button">New game</button>
+          <button class="secondary-button" id="undoButton" type="button">Undo move</button>
+          <button class="secondary-button" id="rotateButton" type="button">Rotate board</button>
+          <button class="secondary-button" id="soundButton" type="button" aria-pressed="true">Sound: on</button>
+        </div>
+      </section>
+
+      <section class="panel-section tips">
+        <p class="eyebrow">Field notes</p>
+        <p>Click a dinosaur, then click a highlighted square. Pawns evolve into a Spinosaurus when they reach the far edge.</p>
+      </section>
+    </aside>
+
+    <section class="board-column" aria-label="Dino chess game">
+      <div class="player-strip opponent-strip" id="opponentStrip">
+        <div class="avatar obsidian">AI</div>
+        <div>
+          <strong id="opponentName">Obsidian Pack</strong>
+          <span id="opponentRole">Computer · Hunter</span>
+        </div>
+        <div class="thinking" id="thinkingIndicator" hidden>
+          <i></i><i></i><i></i>
+          <span>Tracking prey</span>
+        </div>
+      </div>
+
+      <div class="board-frame" id="boardFrame">
+        <div class="board" id="board" role="grid" aria-label="Chess board"></div>
+        <div class="move-layer" id="moveLayer" aria-hidden="true"></div>
+      </div>
+
+      <div class="player-strip" id="playerStrip">
+        <div class="avatar ivory">YOU</div>
+        <div>
+          <strong id="playerName">Ivory Herd</strong>
+          <span>You</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel info-panel">
+      <section class="panel-section roster-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Dinosaur roster</p>
+            <h2>Who is who</h2>
+          </div>
+        </div>
+        <div class="roster" id="roster"></div>
+      </section>
+
+      <section class="panel-section history-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Trail log</p>
+            <h2>Move history</h2>
+          </div>
+          <span class="move-count" id="moveCount">0</span>
+        </div>
+        <ol class="history-list" id="historyList">
+          <li class="empty-history">The first tracks will appear here.</li>
+        </ol>
+      </section>
+    </aside>
+  </main>
+
+  <dialog id="startDialog" class="start-dialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-dino" aria-hidden="true">🦕</div>
+      <p class="eyebrow">Welcome to the Cretaceous board</p>
+      <h1>Ready for Dino Chess?</h1>
+      <p>Standard chess rules, animated dinosaur pieces, and a computer opponent that runs entirely in your browser.</p>
+
+      <div class="dialog-option">
+        <span>Play as</span>
+        <div class="segmented" id="dialogSideControl" role="group" aria-label="Choose side">
+          <button type="button" data-side="w" class="active">Ivory Herd</button>
+          <button type="button" data-side="b">Obsidian Pack</button>
+        </div>
+      </div>
+
+      <div class="dialog-option">
+        <label for="dialogDifficulty">Computer strength</label>
+        <select id="dialogDifficulty">
+          <option value="1">Hatchling · Easy</option>
+          <option value="2" selected>Hunter · Medium</option>
+          <option value="3">Alpha · Hard</option>
+        </select>
+      </div>
+
+      <button class="primary-button large" id="startButton" value="start">Start the hunt</button>
+      <small>No sign-in, account, or backend required.</small>
+    </form>
+  </dialog>
+
+  <dialog id="helpDialog" class="help-dialog">
+    <form method="dialog" class="dialog-card help-card">
+      <button class="dialog-close" value="close" aria-label="Close help">×</button>
+      <p class="eyebrow">How to play</p>
+      <h2>Chess rules, dinosaur movement</h2>
+      <p>Every dinosaur follows the movement rules of its matching chess piece. Select a dinosaur to reveal its legal destinations.</p>
+      <ul>
+        <li><strong>T-Rex</strong> is the King.</li>
+        <li><strong>Spinosaurus</strong> is the Queen.</li>
+        <li><strong>Ankylosaurus</strong> is the Rook.</li>
+        <li><strong>Pteranodon</strong> is the Bishop.</li>
+        <li><strong>Velociraptor</strong> is the Knight.</li>
+        <li><strong>Compsognathus</strong> is the Pawn.</li>
+      </ul>
+      <p>Checkmate the opposing T-Rex to win.</p>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="game.js" defer></script>
+</body>
+</html>
