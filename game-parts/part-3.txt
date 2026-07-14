@@ -1,0 +1,152 @@
+    if (insufficientMaterial(state)) return { type: "insufficient", winner: null };
+    return null;
+  }
+
+  function insufficientMaterial(state) {
+    const pieces = [];
+    for (const row of state.board) for (const p of row) if (p) pieces.push(p.type);
+    const nonKings = pieces.filter((type) => type !== "k");
+    if (nonKings.length === 0) return true;
+    if (nonKings.length === 1 && ["b", "n"].includes(nonKings[0])) return true;
+    return false;
+  }
+
+  function evaluate(state, aiColor) {
+    if (state.result?.type === "checkmate") return state.result.winner === aiColor ? 999999 : -999999;
+    if (state.result) return 0;
+    let score = 0;
+    for (let r = 0; r < 8; r += 1) {
+      for (let c = 0; c < 8; c += 1) {
+        const p = state.board[r][c];
+        if (!p) continue;
+        let value = VALUES[p.type];
+        const centerDistance = Math.abs(3.5 - r) + Math.abs(3.5 - c);
+        if (["n", "b", "q"].includes(p.type)) value += Math.round((7 - centerDistance) * 4);
+        if (p.type === "p") {
+          const progress = p.color === "w" ? 6 - r : r - 1;
+          value += progress * 9;
+        }
+        score += p.color === aiColor ? value : -value;
+      }
+    }
+    return score;
+  }
+
+  function orderedMoves(state, moves) {
+    return [...moves].sort((a, b) => {
+      const aTarget = state.board[a.toR][a.toC];
+      const bTarget = state.board[b.toR][b.toC];
+      const aValue = (aTarget ? VALUES[aTarget.type] : 0) + (a.promotion ? 800 : 0);
+      const bValue = (bTarget ? VALUES[bTarget.type] : 0) + (b.promotion ? 800 : 0);
+      return bValue - aValue;
+    });
+  }
+
+  function minimax(state, depth, alpha, beta, maximizing, aiColor) {
+    const moves = legalMoves(state, state.turn);
+    if (moves.length === 0) {
+      if (inCheck(state, state.turn)) return state.turn === aiColor ? -999999 - depth : 999999 + depth;
+      return 0;
+    }
+    if (depth === 0) return evaluate(state, aiColor);
+    const ordered = orderedMoves(state, moves);
+    if (maximizing) {
+      let best = -Infinity;
+      for (const move of ordered) {
+        const next = cloneState(state, false);
+        applyMove(next, move, false);
+        best = Math.max(best, minimax(next, depth - 1, alpha, beta, false, aiColor));
+        alpha = Math.max(alpha, best);
+        if (beta <= alpha) break;
+      }
+      return best;
+    }
+    let best = Infinity;
+    for (const move of ordered) {
+      const next = cloneState(state, false);
+      applyMove(next, move, false);
+      best = Math.min(best, minimax(next, depth - 1, alpha, beta, true, aiColor));
+      beta = Math.min(beta, best);
+      if (beta <= alpha) break;
+    }
+    return best;
+  }
+
+  function chooseAiMove(state, depth) {
+    const aiColor = state.turn;
+    const moves = orderedMoves(state, legalMoves(state, aiColor));
+    if (!moves.length) return null;
+    let bestScore = -Infinity;
+    let bestMoves = [];
+    for (const move of moves) {
+      const next = cloneState(state, false);
+      applyMove(next, move, false);
+      const score = minimax(next, Math.max(0, depth - 1), -Infinity, Infinity, false, aiColor);
+      if (score > bestScore + 0.01) {
+        bestScore = score;
+        bestMoves = [move];
+      } else if (Math.abs(score - bestScore) < 0.01) {
+        bestMoves.push(move);
+      }
+    }
+    return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+  }
+
+  function dinosaurSVG(type) {
+    const sharedStart = `<svg class="dino-svg" viewBox="0 0 100 100" aria-hidden="true"><g class="dino-motion" fill="var(--dino-main)" stroke="var(--dino-accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">`;
+    const sharedEnd = `</g></svg>`;
+    const eye = `<circle cx="50" cy="23" r="2.2" fill="var(--dino-eye)" stroke="none"/>`;
+    const shapes = {
+      p: `${sharedStart}
+        <path d="M48 68 C37 73 27 76 16 76 C29 69 34 63 39 55 Z"/>
+        <ellipse cx="50" cy="53" rx="14" ry="20"/>
+        <ellipse cx="50" cy="29" rx="9" ry="11"/>
+        <path class="leg" d="M42 62 L34 75 M58 62 L66 75"/>
+        <path class="leg alt" d="M43 45 L35 37 M57 45 L65 37"/>
+        ${eye}
+      ${sharedEnd}`,
+      n: `${sharedStart}
+        <path d="M48 70 C34 78 20 81 8 78 C26 69 34 61 40 51 Z"/>
+        <ellipse cx="51" cy="53" rx="16" ry="22"/>
+        <path d="M44 34 C45 23 53 16 64 17 C58 22 58 29 61 35 Z"/>
+        <ellipse cx="56" cy="29" rx="12" ry="9"/>
+        <path class="leg" d="M42 62 L29 75 L37 77 M60 61 L73 73 L65 78"/>
+        <path class="leg alt" d="M43 47 L31 39 M60 47 L71 37"/>
+        <path d="M32 75 l-4 5 m45-7 4 5"/>
+        <circle cx="61" cy="27" r="2.2" fill="var(--dino-eye)" stroke="none"/>
+      ${sharedEnd}`,
+      b: `${sharedStart}
+        <path d="M48 70 C42 77 35 81 27 82 L42 58 Z"/>
+        <ellipse cx="50" cy="50" rx="10" ry="25"/>
+        <path d="M43 43 C29 29 14 27 7 34 C20 39 28 50 38 59 Z"/>
+        <path d="M57 43 C71 29 86 27 93 34 C80 39 72 50 62 59 Z"/>
+        <path d="M45 29 L50 13 L55 29 Z"/>
+        <path class="leg" d="M45 62 L37 74 M55 62 L63 74"/>
+        ${eye}
+      ${sharedEnd}`,
+      r: `${sharedStart}
+        <path d="M50 72 C36 77 23 79 10 76 L34 60 Z"/>
+        <ellipse cx="51" cy="51" rx="23" ry="24"/>
+        <ellipse cx="50" cy="26" rx="13" ry="10"/>
+        <path d="M31 42 l8-9 7 8 7-10 8 10 8-7 5 11" fill="var(--dino-accent)"/>
+        <circle cx="22" cy="69" r="7" fill="var(--dino-accent)"/>
+        <path class="leg" d="M36 61 L25 72 M65 61 L76 72"/>
+        <path class="leg alt" d="M36 45 L24 36 M65 45 L77 36"/>
+        ${eye}
+      ${sharedEnd}`,
+      q: `${sharedStart}
+        <path d="M49 75 C36 80 22 82 9 79 C28 69 35 59 40 49 Z"/>
+        <ellipse cx="51" cy="53" rx="18" ry="25"/>
+        <ellipse cx="51" cy="25" rx="13" ry="11"/>
+        <path d="M39 55 L28 48 L39 43 L27 36 L42 33 L50 42 L58 31 L73 36 L61 43 L74 50 L61 56" fill="var(--dino-accent)"/>
+        <path class="leg" d="M40 64 L28 76 M62 64 L74 76"/>
+        <path class="leg alt" d="M40 46 L29 38 M62 46 L73 38"/>
+        ${eye}
+      ${sharedEnd}`,
+      k: `${sharedStart}
+        <path d="M49 75 C34 81 20 82 8 78 C26 69 34 60 39 49 Z"/>
+        <ellipse cx="51" cy="54" rx="20" ry="25"/>
+        <path d="M36 29 C38 17 46 12 57 13 C69 14 74 21 72 31 C66 38 59 41 48 39 C41 37 37 34 36 29 Z"/>
+        <path d="M39 19 L43 8 L50 17 L57 7 L62 19" fill="var(--dino-accent)"/>
+        <path class="leg" d="M38 65 L25 78 M64 65 L77 78"/>
+        <path class="leg alt" d="M37 46 L28 43 M65 46 L73 43"/>
