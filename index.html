@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#16251f" />
+  <meta name="theme-color" content="#0b0e0a" />
   <meta name="description" content="Dino Chess — classic chess rules with animated prehistoric pieces and a browser-based computer opponent." />
   <title>Dino Chess</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -14,14 +14,14 @@
 
   <header class="topbar">
     <a class="brand" href="#" aria-label="Dino Chess home">
-      <span class="brand-mark" aria-hidden="true">🦖</span>
+      <span class="brand-mark" aria-hidden="true">☠</span>
       <span>
         <strong>Dino Chess</strong>
-        <small>Classic rules. Prehistoric pieces.</small>
+        <small>Ancient strategy · Prehistoric power</small>
       </span>
     </a>
     <div class="topbar-actions">
-      <span class="mode-pill">Player vs Computer</span>
+      <span class="mode-pill">Solo Expedition · Player vs Computer</span>
       <button class="icon-button" id="helpButton" type="button" aria-label="How to play">?</button>
     </div>
   </header>
@@ -29,8 +29,8 @@
   <main class="game-layout">
     <aside class="panel control-panel">
       <section class="panel-section">
-        <p class="eyebrow">Expedition setup</p>
-        <h2>Choose your side</h2>
+        <p class="eyebrow">Battle command</p>
+        <h2>Choose your faction</h2>
         <div class="segmented" id="sideControl" role="group" aria-label="Choose side">
           <button type="button" data-side="w" class="active">Ivory Herd</button>
           <button type="button" data-side="b">Obsidian Pack</button>
@@ -62,8 +62,8 @@
       </section>
 
       <section class="panel-section tips">
-        <p class="eyebrow">Field notes</p>
-        <p>Click a dinosaur, then click a highlighted square. Pawns evolve into a Spinosaurus when they reach the far edge.</p>
+        <p class="eyebrow">How to command</p>
+        <p>Select a dinosaur, then choose a glowing destination. Compsognathus pawns evolve into a Spinosaurus on the far rank.</p>
       </section>
     </aside>
 
@@ -98,8 +98,8 @@
       <section class="panel-section roster-section">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Dinosaur roster</p>
-            <h2>Who is who</h2>
+            <p class="eyebrow">War beasts</p>
+            <h2>Dinosaur roster</h2>
           </div>
         </div>
         <div class="roster" id="roster"></div>
@@ -108,8 +108,8 @@
       <section class="panel-section history-section">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Trail log</p>
-            <h2>Move history</h2>
+            <p class="eyebrow">Battle record</p>
+            <h2>Move list</h2>
           </div>
           <span class="move-count" id="moveCount">0</span>
         </div>
@@ -122,9 +122,9 @@
 
   <dialog id="startDialog" class="start-dialog">
     <form method="dialog" class="dialog-card">
-      <div class="dialog-dino" aria-hidden="true">🦕</div>
-      <p class="eyebrow">Welcome to the Cretaceous board</p>
-      <h1>Ready for Dino Chess?</h1>
+      <div class="dialog-dino" aria-hidden="true">🦖</div>
+      <p class="eyebrow">Enter the ancient arena</p>
+      <h1>Command your prehistoric army</h1>
       <p>Standard chess rules, animated dinosaur pieces, and a computer opponent that runs entirely in your browser.</p>
 
       <div class="dialog-option">
