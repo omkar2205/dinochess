@@ -1,0 +1,175 @@
+        <path d="M52 35 C60 37 65 36 70 32"/>
+        <circle cx="58" cy="24" r="2.4" fill="var(--dino-eye)" stroke="none"/>
+      ${sharedEnd}`
+    };
+    return shapes[type];
+  }
+
+  function pieceHTML(p) {
+    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" title="${PIECE_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
+      ${dinosaurSVG(p.type)}
+      <span class="role-rune">${ROLE_RUNES[p.type]}</span>
+    </div>`;
+  }
+
+  function displayedCoords(index) {
+    const r = Math.floor(index / 8);
+    const c = index % 8;
+    return flipped ? { r: 7 - r, c: 7 - c } : { r, c };
+  }
+
+  function renderBoard() {
+    boardEl.innerHTML = "";
+    const currentMoves = selected ? selectedMoves : [];
+    const checkedKing = inCheck(game, game.turn) ? findKing(game, game.turn) : null;
+
+    for (let index = 0; index < 64; index += 1) {
+      const { r, c } = displayedCoords(index);
+      const square = document.createElement("button");
+      square.type = "button";
+      square.className = `square ${(r + c) % 2 === 0 ? "light" : "dark"}`;
+      square.dataset.r = String(r);
+      square.dataset.c = String(c);
+      square.dataset.square = coordToSquare(r, c);
+      square.setAttribute("role", "gridcell");
+      square.setAttribute("aria-label", coordToSquare(r, c));
+
+      if (selected && selected.r === r && selected.c === c) square.classList.add("selected");
+      const legal = currentMoves.find((m) => m.toR === r && m.toC === c);
+      if (legal) square.classList.add(legal.capture || legal.enPassant ? "capture" : "legal");
+      if (game.lastMove && [game.lastMove.from, game.lastMove.to].includes(coordToSquare(r, c))) square.classList.add("last-move");
+      if (checkedKing && checkedKing.r === r && checkedKing.c === c) square.classList.add("check");
+
+      const p = game.board[r][c];
+      if (p) {
+        square.innerHTML = pieceHTML(p);
+        square.setAttribute("aria-label", `${coordToSquare(r, c)} ${colorName(p.color)} ${PIECE_NAMES[p.type]} ${ROLE_NAMES[p.type]}`);
+      }
+
+      const visualRow = Math.floor(index / 8);
+      const visualCol = index % 8;
+      if (visualRow === 7) square.insertAdjacentHTML("beforeend", `<span class="coord file">${FILES[c]}</span>`);
+      if (visualCol === 0) square.insertAdjacentHTML("beforeend", `<span class="coord rank">${8 - r}</span>`);
+      square.addEventListener("click", onSquareClick);
+      boardEl.appendChild(square);
+    }
+    updateStatus();
+    updateHistory();
+    updateButtons();
+    saveGame();
+  }
+
+  function onSquareClick(event) {
+    if (inputLocked || game.result || game.turn !== playerColor) return;
+    const square = event.currentTarget;
+    const r = Number(square.dataset.r);
+    const c = Number(square.dataset.c);
+    const p = game.board[r][c];
+
+    if (selected) {
+      const chosen = selectedMoves.find((m) => m.toR === r && m.toC === c);
+      if (chosen) {
+        selected = null;
+        selectedMoves = [];
+        performMove(chosen, false);
+        return;
+      }
+    }
+
+    if (p && p.color === playerColor && p.color === game.turn) {
+      selected = { r, c };
+      selectedMoves = legalMovesFrom(game, r, c);
+      playTone("select");
+    } else {
+      selected = null;
+      selectedMoves = [];
+    }
+    renderBoard();
+  }
+
+  function performMove(move, byAi) {
+    inputLocked = true;
+    selected = null;
+    selectedMoves = [];
+    animateMove(move, () => {
+      const outcome = applyMove(game, move, true);
+      playTone(outcome.captured ? "capture" : "move");
+      inputLocked = false;
+      renderBoard();
+      if (game.result) {
+        announceResult();
+        return;
+      }
+      if (!byAi && game.turn !== playerColor) scheduleAiMove();
+    });
+  }
+
+  function animateMove(move, done) {
+    const fromEl = boardEl.querySelector(`[data-square="${move.from}"] .piece`);
+    const toSquare = boardEl.querySelector(`[data-square="${move.to}"]`);
+    if (!fromEl || !toSquare || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      done();
+      return;
+    }
+    const boardRect = boardEl.getBoundingClientRect();
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = toSquare.getBoundingClientRect();
+    const mover = document.createElement("div");
+    mover.className = "moving-piece running";
+    mover.style.left = `${fromRect.left - boardRect.left}px`;
+    mover.style.top = `${fromRect.top - boardRect.top}px`;
+    mover.style.width = `${fromRect.width}px`;
+    mover.style.height = `${fromRect.height}px`;
+    mover.innerHTML = fromEl.outerHTML;
+    moveLayer.appendChild(mover);
+    fromEl.style.opacity = "0";
+    const dx = toRect.left - fromRect.left + (toRect.width - fromRect.width) / 2;
+    const dy = toRect.top - fromRect.top + (toRect.height - fromRect.height) / 2;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      mover.style.transform = `translate(${dx}px, ${dy}px)`;
+    }));
+    window.setTimeout(() => {
+      mover.remove();
+      done();
+    }, 450);
+  }
+
+  function scheduleAiMove() {
+    clearTimeout(aiTimer);
+    inputLocked = true;
+    thinkingIndicator.hidden = false;
+    updateStatus();
+    aiTimer = window.setTimeout(() => {
+      const depth = Number(difficultySelect.value);
+      const move = chooseAiMove(game, depth);
+      thinkingIndicator.hidden = true;
+      inputLocked = false;
+      if (move) performMove(move, true);
+    }, 500);
+  }
+
+  function updateStatus() {
+    const currentName = colorName(game.turn);
+    const check = inCheck(game, game.turn);
+    turnLabel.textContent = `${currentName} to move`;
+    statusCard.classList.toggle("danger", check || game.result?.type === "checkmate");
+    statusIcon.textContent = check ? "!" : "●";
+
+    if (game.result) {
+      if (game.result.type === "checkmate") {
+        statusText.textContent = `${colorName(game.result.winner)} wins by checkmate`;
+      } else if (game.result.type === "stalemate") {
+        statusText.textContent = "Draw by stalemate";
+      } else if (game.result.type === "fifty-move") {
+        statusText.textContent = "Draw by fifty-move rule";
+      } else {
+        statusText.textContent = "Draw by insufficient material";
+      }
+      return;
+    }
+    if (thinkingIndicator.hidden === false) {
+      statusText.textContent = "Computer is choosing a trail";
+    } else if (check) {
+      statusText.textContent = "The T-Rex is in check";
+    } else if (game.turn !== playerColor) {
+      statusText.textContent = "Waiting for the computer";
