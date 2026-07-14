@@ -1,10 +1,3 @@
-        <path d="M52 35 C60 37 65 36 70 32"/>
-        <circle cx="58" cy="24" r="2.4" fill="var(--dino-eye)" stroke="none"/>
-      ${sharedEnd}`
-    };
-    return shapes[type];
-  }
-
   function pieceHTML(p) {
     return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" title="${PIECE_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
       ${dinosaurSVG(p.type)}
