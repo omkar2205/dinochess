@@ -1,6 +1,6 @@
 # Dino Chess
 
-A browser-only, single-player chess game where classic pieces are redesigned as animated dinosaurs.
+A browser-only, single-player chess game where classic pieces are redesigned as prehistoric fossil-bronze tokens.
 
 - **T-Rex** — King
 - **Spinosaurus** — Queen
@@ -13,8 +13,8 @@ A browser-only, single-player chess game where classic pieces are redesigned as 
 
 - Standard legal movement, check, checkmate, castling, en passant, promotion and stalemate
 - Three computer difficulty levels
-- Layered top-down dinosaur miniatures with highlights, shadows, armour details and raised bases
-- Idle and running movement animations
+- Style 5 fossil-bronze token artwork for the Ivory Herd and Obsidian Pack
+- Static top-down pieces with a simple whole-token move transition
 - Ancient stone chessboard with jungle atmosphere and torch effects
 - Responsive mobile and desktop interface
 - Move history, undo, board rotation and generated sound effects
@@ -35,10 +35,10 @@ Then open `http://localhost:8000`.
 
 The included workflow deploys the root folder whenever `main` is updated. In the repository settings, GitHub Pages should use **GitHub Actions** as its source. The workflow also attempts first-time Pages enablement automatically.
 
-## Current scope
+## Artwork implementation
 
-This version uses original, layered SVG miniature artwork to create a lightweight 2.5D appearance without external assets. Fully rendered frame-by-frame idle, run and attack sprite sheets can later replace the SVG art without changing the chess engine.
+The twelve faction pieces are stored in one lightweight sprite sheet at `assets/style5-pieces.svg`. The SVG embeds the approved WebP token sheet, while `style5.css` maps each chess role and faction to the correct section. The earlier procedural SVG artwork remains in the game source as a fallback but is hidden by the Style 5 theme.
 
 ## Licence
 
-MIT. The Dino Chess name, concept implementation and included SVG artwork in this repository may be reused under the MIT licence.
+MIT. The Dino Chess name, concept implementation and included artwork in this repository may be reused under the MIT licence.
