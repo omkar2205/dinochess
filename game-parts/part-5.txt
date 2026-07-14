@@ -1,0 +1,175 @@
+    } else if (selected) {
+      statusText.textContent = `${selectedMoves.length} legal path${selectedMoves.length === 1 ? "" : "s"}`;
+    } else {
+      statusText.textContent = "Select a dinosaur";
+    }
+  }
+
+  function updateHistory() {
+    moveCount.textContent = String(game.moveLog.length);
+    if (!game.moveLog.length) {
+      historyList.innerHTML = `<li class="empty-history">The first tracks will appear here.</li>`;
+      return;
+    }
+    const rows = [];
+    for (let i = 0; i < game.moveLog.length; i += 2) {
+      const white = game.moveLog[i];
+      const black = game.moveLog[i + 1];
+      rows.push(`<li class="history-row">
+        <span class="number">${Math.floor(i / 2) + 1}.</span>
+        <span class="history-move" title="${white ? `${white.from} to ${white.to}` : ""}">${white?.notation || ""}</span>
+        <span class="history-move" title="${black ? `${black.from} to ${black.to}` : ""}">${black?.notation || ""}</span>
+      </li>`);
+    }
+    historyList.innerHTML = rows.join("");
+    historyList.scrollTop = historyList.scrollHeight;
+  }
+
+  function updateButtons() {
+    $("#undoButton").disabled = game.history.length === 0 || inputLocked;
+    $("#newGameButton").disabled = inputLocked;
+  }
+
+  function announceResult() {
+    if (game.result.type === "checkmate") {
+      playTone(game.result.winner === playerColor ? "win" : "loss");
+      showToast(game.result.winner === playerColor ? "Your herd rules the board!" : "The computer pack has checkmated your T-Rex.", 4200);
+    } else {
+      playTone("draw");
+      showToast("The expedition ends in a draw.", 3500);
+    }
+  }
+
+  function undoTurn() {
+    if (inputLocked || !game.history.length) return;
+    clearTimeout(aiTimer);
+    thinkingIndicator.hidden = true;
+    let previous = game.history.pop();
+    if (previous && previous.turn !== playerColor && game.history.length) previous = game.history.pop();
+    if (!previous) return;
+    const remainingHistory = game.history.map((h) => cloneState(h, false));
+    game = cloneState(previous, true);
+    game.history = remainingHistory;
+    game.result = null;
+    selected = null;
+    selectedMoves = [];
+    inputLocked = false;
+    renderBoard();
+    showToast("The last turn was rewound.");
+  }
+
+  function newGame(options = {}) {
+    clearTimeout(aiTimer);
+    playerColor = options.side || playerColor;
+    const difficulty = String(options.difficulty || difficultySelect.value || "2");
+    difficultySelect.value = difficulty;
+    dialogDifficulty.value = difficulty;
+    game = createInitialState();
+    selected = null;
+    selectedMoves = [];
+    inputLocked = false;
+    flipped = playerColor === "b";
+    thinkingIndicator.hidden = true;
+    syncSideControls();
+    syncPlayerLabels();
+    renderBoard();
+    if (playerColor === "b") scheduleAiMove();
+  }
+
+  function syncPlayerLabels() {
+    playerName.textContent = colorName(playerColor);
+    opponentName.textContent = colorName(opposite(playerColor));
+    const labels = { 1: "Hatchling", 2: "Hunter", 3: "Alpha" };
+    opponentRole.textContent = `Computer · ${labels[Number(difficultySelect.value)]}`;
+    const playerAvatar = playerStrip.querySelector(".avatar");
+    const opponentAvatar = opponentStrip.querySelector(".avatar");
+    playerAvatar.className = `avatar ${playerColor === "w" ? "ivory" : "obsidian"}`;
+    opponentAvatar.className = `avatar ${playerColor === "w" ? "obsidian" : "ivory"}`;
+  }
+
+  function syncSideControls() {
+    $$(`[data-side]`).forEach((button) => button.classList.toggle("active", button.dataset.side === playerColor));
+  }
+
+  function renderRoster() {
+    $("#roster").innerHTML = DINO_ORDER.map((type) => `<div class="roster-item">
+      <div class="roster-icon">${pieceHTML({ type, color: "w" })}</div>
+      <div><strong>${PIECE_NAMES[type]}</strong><span>${ROLE_NAMES[type]}</span></div>
+      <div class="roster-code">${ROLE_RUNES[type]}</div>
+    </div>`).join("");
+  }
+
+  function rotateBoard() {
+    flipped = !flipped;
+    renderBoard();
+  }
+
+  function showToast(message, duration = 2200) {
+    clearTimeout(toastTimer);
+    toast.textContent = message;
+    toast.classList.add("show");
+    toastTimer = window.setTimeout(() => toast.classList.remove("show"), duration);
+  }
+
+  function playTone(kind) {
+    if (!soundEnabled) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const settings = {
+        select: [330, .035], move: [180, .06], capture: [110, .13], win: [520, .25], loss: [85, .25], draw: [240, .16]
+      }[kind] || [180, .06];
+      oscillator.type = kind === "capture" ? "sawtooth" : "sine";
+      oscillator.frequency.setValueAtTime(settings[0], ctx.currentTime);
+      if (kind === "win") oscillator.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + settings[1]);
+      gain.gain.setValueAtTime(.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.08, ctx.currentTime + .01);
+      gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + settings[1]);
+      oscillator.connect(gain).connect(ctx.destination);
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + settings[1] + .02);
+      oscillator.addEventListener("ended", () => ctx.close());
+    } catch (error) {
+      // Audio is optional; browsers may block it before interaction.
+    }
+  }
+
+  function serializeState(state) {
+    return {
+      ...cloneState(state, true),
+      savedAt: Date.now(),
+      playerColor,
+      flipped,
+      difficulty: difficultySelect.value,
+      soundEnabled
+    };
+  }
+
+  function saveGame() {
+    try {
+      localStorage.setItem("dinoChessSave", JSON.stringify(serializeState(game)));
+    } catch (error) {
+      // Local storage is optional.
+    }
+  }
+
+  function loadGame() {
+    try {
+      const raw = localStorage.getItem("dinoChessSave");
+      if (!raw) return false;
+      const saved = JSON.parse(raw);
+      if (!saved.board || !saved.turn || Date.now() - saved.savedAt > 1000 * 60 * 60 * 24 * 30) return false;
+      game = {
+        board: saved.board,
+        turn: saved.turn,
+        enPassant: saved.enPassant,
+        halfmove: saved.halfmove || 0,
+        fullmove: saved.fullmove || 1,
+        history: saved.history || [],
+        moveLog: saved.moveLog || [],
+        lastMove: saved.lastMove,
+        result: saved.result
+      };
+      playerColor = saved.playerColor || "w";
