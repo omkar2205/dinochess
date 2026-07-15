@@ -7,20 +7,49 @@
     p: "Dinosaur Egg"
   };
 
-  const PIECE_COLUMNS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 };
+  const PIECE_FILES = {
+    w: {
+      p: "ivory-pawn",
+      n: "ivory-knight",
+      b: "ivory-bishop",
+      r: "ivory-rook",
+      q: "ivory-queen",
+      k: "ivory-king"
+    },
+    b: {
+      p: "obsidian-pawn",
+      n: "obsidian-knight",
+      b: "obsidian-bishop",
+      r: "obsidian-rook",
+      q: "obsidian-queen",
+      k: "obsidian-king"
+    }
+  };
+
+  const PIECE_SVG_FALLBACKS = {
+    w: {
+      p: "ivory-pawn.svg",
+      n: "Ivory-knight.svg",
+      b: "ivory-bishop.svg",
+      r: "ivory-rook.svg",
+      q: "ivory-queen.svg",
+      k: "ivory-king.svg"
+    },
+    b: {
+      p: "obsidian-pawn.svg",
+      n: "obsidian-knight.svg",
+      b: "obsidian-bishop.svg",
+      r: "obsidian-rook.svg",
+      q: "obsidian-queen.svg",
+      k: "obsidian-king.svg"
+    }
+  };
 
   function pieceHTML(p) {
-    if (p.color === "w" && p.type === "p") {
-      return `<div class="piece white individual-piece" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
-        <img class="individual-piece-art" src="assets/ivory-pawn.svg" alt="" draggable="false" />
-      </div>`;
-    }
-
-    const column = PIECE_COLUMNS[p.type];
-    const left = `${column * -100}%`;
-    const top = p.color === "w" ? "0%" : "-100%";
-    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" style="--piece-left:${left};--piece-top:${top}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
-      <img class="piece-art" src="assets/dino-pieces-final.svg" alt="" draggable="false" />
+    const pieceFile = PIECE_FILES[p.color][p.type];
+    const fallbackFile = PIECE_SVG_FALLBACKS[p.color][p.type];
+    return `<div class="piece ${p.color === "w" ? "white" : "black"} individual-piece" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
+      <img class="individual-piece-art" src="assets/rendered/${pieceFile}.png?v=20260715" data-fallback="assets/${fallbackFile}" alt="" draggable="false" onerror="this.onerror=null;this.src=this.dataset.fallback" />
     </div>`;
   }
 
