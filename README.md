@@ -1,6 +1,6 @@
 # Dino Chess
 
-A browser-only, single-player chess game where classic pieces are redesigned as scalable dinosaur SVG icons.
+A browser-only, single-player chess game using a custom dinosaur-themed chess set.
 
 - **Brachiosaurus** — King
 - **T-Rex** — Queen
@@ -13,8 +13,8 @@ A browser-only, single-player chess game where classic pieces are redesigned as 
 
 - Standard legal movement, check, checkmate, castling, en passant, promotion and stalemate
 - Three computer difficulty levels
-- True vector dinosaur artwork for the Ivory Herd and Obsidian Pack
-- Static side-view and three-quarter-view piece silhouettes
+- Final supplied artwork for the Ivory Herd and Obsidian Pack
+- Static side-view and three-quarter-view pieces
 - Simple whole-piece movement transition
 - Ancient stone chessboard with jungle atmosphere and torch effects
 - Responsive mobile and desktop interface
@@ -38,8 +38,8 @@ The included workflow deploys the root folder whenever `main` is updated. In the
 
 ## Artwork implementation
 
-The full set is stored in `assets/dino-pieces.svg` as one editable SVG symbol sprite. Each piece is made from vector paths, fills, gradients and strokes rather than an embedded raster image. The game inserts the correct symbol using an external SVG `<use>` reference, keeping the artwork sharp at every board size while avoiding twelve separate network requests.
+The final supplied sheet has been cleaned, separated and normalised into a precise 6 × 2 transparent sprite at `assets/dino-pieces-final.svg`. The first row contains the Ivory Herd and the second row contains the Obsidian Pack. `style5.css` maps each chess role to the correct section of the sprite, keeping the board lightweight and ensuring all twelve pieces remain aligned consistently.
 
 ## Licence
 
-MIT. The Dino Chess name, concept implementation and included SVG artwork in this repository may be reused under the MIT licence.
+MIT. The Dino Chess implementation and included artwork may be reused under the MIT licence.
