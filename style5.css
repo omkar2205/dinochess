@@ -57,34 +57,9 @@
   filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .4));
 }
 
-.roster-item:nth-child(1) strong,
-.roster-item:nth-child(2) strong,
-.roster-item:nth-child(3) strong,
-.roster-item:nth-child(4) strong,
-.roster-item:nth-child(5) strong,
-.roster-item:nth-child(6) strong {
-  font-size: 0;
-}
-
-.roster-item:nth-child(1) strong::after { content: "Brachiosaurus"; }
-.roster-item:nth-child(2) strong::after { content: "T-Rex"; }
-.roster-item:nth-child(3) strong::after { content: "Triceratops"; }
-.roster-item:nth-child(4) strong::after { content: "Pterodactyl"; }
-.roster-item:nth-child(5) strong::after { content: "Parasaurolophus"; }
-.roster-item:nth-child(6) strong::after { content: "Dinosaur Egg"; }
-
-.roster-item strong::after {
-  font-family: Georgia, serif;
-  font-size: 11px;
-}
-
 @media (max-width: 560px) {
   .piece {
     width: 109%;
     height: 116%;
-  }
-
-  .roster-item strong::after {
-    font-size: 9px;
   }
 }
