@@ -30,8 +30,8 @@
   width: 600%;
   height: 200%;
   max-width: none;
-  left: calc(var(--piece-col) * -100%);
-  top: calc(var(--piece-row) * -100%);
+  left: var(--piece-left);
+  top: var(--piece-top);
   object-fit: fill;
   user-select: none;
   pointer-events: none;
