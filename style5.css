@@ -40,6 +40,14 @@
   pointer-events: none;
 }
 
+/* Pawns are intentionally smaller than the major pieces. */
+.piece[data-type="p"] .individual-piece-art {
+  width: 78%;
+  height: 78%;
+  align-self: end;
+  margin-bottom: 6%;
+}
+
 /* Static artwork: only the complete piece glides between squares. */
 .dino-motion,
 .moving-piece.running .dino-motion,
@@ -79,9 +87,21 @@
   height: 100%;
 }
 
+.roster-icon .piece[data-type="p"] .individual-piece-art {
+  width: 82%;
+  height: 82%;
+  margin-bottom: 4%;
+}
+
 @media (max-width: 560px) {
   .piece {
     width: 110%;
     height: 110%;
+  }
+
+  .piece[data-type="p"] .individual-piece-art {
+    width: 80%;
+    height: 80%;
+    margin-bottom: 5%;
   }
 }
