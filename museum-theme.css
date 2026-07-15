@@ -1,0 +1,383 @@
+/* Natural History Museum theme
+   Clean graphite, limestone and muted bronze presentation for the final pieces. */
+
+:root {
+  --bg: #171918;
+  --bg-deep: #101211;
+  --panel: #242624;
+  --panel-2: #2b2e2b;
+  --panel-3: #30332f;
+  --line: #51483f;
+  --line-soft: rgba(169, 120, 85, .28);
+  --gold: #a97855;
+  --gold-bright: #c59673;
+  --gold-dark: #674c3c;
+  --text: #eeeae2;
+  --muted: #aaa59c;
+  --moss: #6f9b91;
+  --moss-bright: #8fb8ae;
+  --danger: #b45f52;
+  --ivory: #ddd5c8;
+  --ivory-accent: #a79c8d;
+  --obsidian: #282a29;
+  --obsidian-accent: #7e7770;
+  --light-square: #b9b1a4;
+  --dark-square: #6d726e;
+  --shadow: 0 22px 55px rgba(0, 0, 0, .34);
+  --radius: 12px;
+}
+
+html { background: var(--bg-deep); }
+
+body {
+  color: var(--text);
+  background:
+    radial-gradient(circle at 50% -12%, rgba(169, 120, 85, .14), transparent 35%),
+    linear-gradient(180deg, #202321 0%, #171918 52%, #111312 100%);
+}
+
+body::before,
+body::after { display: none !important; }
+
+.page-noise {
+  opacity: .045;
+  mix-blend-mode: soft-light;
+}
+
+.topbar {
+  min-height: 76px;
+  border: 1px solid #4a4640;
+  border-radius: 12px;
+  background: rgba(36, 38, 36, .96);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .28);
+}
+
+.topbar::before,
+.topbar::after { display: none; }
+
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  border: 1px solid #8b654d;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #bd8d6b, #795741);
+  color: #1d1c1a;
+  box-shadow: inset 0 1px rgba(255,255,255,.2), 0 6px 14px rgba(0,0,0,.25);
+}
+
+.brand-mark::after { display: none; }
+
+.brand strong {
+  color: #f1ece3;
+  font-family: Georgia, "Times New Roman", serif;
+  text-transform: none;
+  letter-spacing: .025em;
+  text-shadow: none;
+}
+
+.brand small { color: #aaa59c; letter-spacing: .1em; }
+
+.mode-pill,
+.icon-button {
+  border: 1px solid #514d47;
+  border-radius: 8px;
+  background: #2b2e2b;
+  color: #d5cec4;
+  box-shadow: none;
+}
+
+.icon-button:hover {
+  border-color: var(--gold);
+  color: #fff;
+  background: #343733;
+}
+
+.game-layout { gap: 18px; }
+
+.panel {
+  border: 1px solid #464944;
+  border-radius: 12px;
+  background: rgba(36, 38, 36, .97);
+  box-shadow: var(--shadow);
+}
+
+.panel::before,
+.panel::after { display: none; }
+
+.panel-section { border-bottom-color: #3c3f3b; }
+
+.panel h2,
+.dialog-card h1,
+.dialog-card h2 {
+  color: #eee9df;
+  text-shadow: none;
+}
+
+.eyebrow { color: #b88868; }
+.field-label,
+.tips p:last-child { color: var(--muted); }
+
+select {
+  border: 1px solid #535650;
+  border-radius: 8px;
+  background: #1d201e;
+  color: #eeeae2;
+  box-shadow: none;
+}
+
+select:focus {
+  border-color: #9d7358;
+  box-shadow: 0 0 0 3px rgba(169,120,85,.16);
+}
+
+.segmented {
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid #4c4f4a;
+  border-radius: 10px;
+  background: #1b1d1c;
+  box-shadow: none;
+}
+
+.segmented button {
+  border-radius: 7px;
+  color: #aaa59c;
+  font-family: inherit;
+}
+
+.segmented button[data-side="w"].active {
+  border-color: #d3c8b8;
+  background: linear-gradient(180deg, #e3dccf, #c9bfae);
+  color: #242522;
+  box-shadow: 0 3px 10px rgba(0,0,0,.18);
+}
+
+.segmented button[data-side="b"].active {
+  border-color: #807870;
+  background: linear-gradient(180deg, #464947, #292c2a);
+  color: #f0ece5;
+  box-shadow: 0 3px 10px rgba(0,0,0,.22);
+}
+
+.status-card {
+  border-bottom-color: #3c3f3b;
+  background: #292c29;
+}
+
+.status-icon {
+  border-color: rgba(111,155,145,.58);
+  background: rgba(111,155,145,.12);
+  color: #92bbb1;
+  box-shadow: none;
+}
+
+.status-card span { color: #9e9a93; }
+.status-card strong { color: #eee9df; }
+.status-card.danger .status-icon {
+  color: #d37a6f;
+  border-color: rgba(180,95,82,.65);
+  background: rgba(180,95,82,.12);
+}
+
+.primary-button,
+.secondary-button {
+  border-radius: 8px;
+  font-family: inherit;
+  letter-spacing: .035em;
+}
+
+.primary-button {
+  border: 1px solid #a97855;
+  background: linear-gradient(180deg, #ad7e5e, #825c45);
+  color: #fffaf3;
+  box-shadow: 0 5px 14px rgba(0,0,0,.2);
+}
+
+.secondary-button {
+  border: 1px solid #4e514c;
+  background: #2c2f2c;
+  color: #d8d3ca;
+}
+
+.primary-button:hover { filter: brightness(1.08); }
+.secondary-button:hover {
+  border-color: #82624e;
+  color: #fff;
+  background: #343734;
+}
+
+.board-column::before,
+.board-column::after { display: none !important; }
+
+.player-strip {
+  border: 1px solid #484b46;
+  border-radius: 10px;
+  background: rgba(39, 42, 39, .97);
+  box-shadow: 0 8px 20px rgba(0,0,0,.22);
+}
+
+.player-strip .avatar {
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.avatar.ivory {
+  border: 1px solid #cec4b5;
+  background: linear-gradient(145deg, #e6dfd4, #b8ad9e);
+  color: #282824;
+}
+
+.avatar.obsidian {
+  border: 1px solid #666a66;
+  background: linear-gradient(145deg, #484b49, #242725);
+  color: #eeeae2;
+}
+
+.player-strip strong { color: #eee9df; }
+.player-strip span { color: #a8a39b; }
+.thinking i { background: #7fa89e; }
+
+.board-frame {
+  padding: 24px;
+  border: 1px solid #6b594d;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.035), transparent 42%),
+    linear-gradient(145deg, #4b4038, #302a26 52%, #55473d);
+  box-shadow:
+    0 26px 60px rgba(0,0,0,.38),
+    inset 0 0 0 4px #211f1c,
+    inset 0 0 0 7px #6a574a;
+}
+
+.board-frame::before {
+  inset: 10px;
+  border: 1px solid rgba(198,150,115,.34);
+  box-shadow: none;
+}
+
+.board-frame::after {
+  inset: 17px;
+  border: 1px solid #272622;
+  box-shadow: none;
+}
+
+.board {
+  border: 1px solid #313330;
+  border-radius: 4px;
+  background: var(--dark-square);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06), inset 0 0 18px rgba(0,0,0,.12);
+}
+
+.move-layer { inset: 24px; }
+
+.square.light {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.08), transparent 48%),
+    var(--light-square);
+}
+
+.square.dark {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.035), rgba(0,0,0,.045)),
+    var(--dark-square);
+}
+
+.square::after {
+  box-shadow: inset 0 0 0 1px rgba(32,34,31,.08);
+}
+
+.square.selected {
+  box-shadow: inset 0 0 0 4px #77a99e, inset 0 0 18px rgba(111,155,145,.42);
+}
+
+.square.last-move { box-shadow: inset 0 0 0 999px rgba(169,120,85,.19); }
+.square.check { box-shadow: inset 0 0 0 999px rgba(180,95,82,.34), inset 0 0 20px rgba(180,95,82,.32); }
+
+.square.legal::before {
+  border-color: rgba(226,244,239,.72);
+  background: rgba(71,111,102,.68);
+  box-shadow: 0 0 8px rgba(111,155,145,.35);
+}
+
+.square.capture::before {
+  border-color: rgba(180,95,82,.78);
+  box-shadow: inset 0 0 16px rgba(180,95,82,.24), 0 0 8px rgba(180,95,82,.22);
+}
+
+.coord { color: rgba(29,32,29,.63); }
+.square.dark .coord { color: rgba(238,234,226,.58); }
+
+/* Pawns are half the size of the major pieces. */
+.piece[data-type="p"] .individual-piece-art {
+  width: 50% !important;
+  height: 50% !important;
+  align-self: end;
+  margin-bottom: 8%;
+}
+
+.roster-item {
+  border-color: #3f423e !important;
+  background: #292c29 !important;
+}
+
+.roster-item strong,
+.history-move { color: #e7e2d9 !important; }
+
+.roster-item span,
+.empty-history,
+.history-row .number { color: #9f9b94 !important; }
+
+.roster-code,
+.move-count {
+  border-color: #575a55 !important;
+  background: #202321 !important;
+  color: #c9c2b8 !important;
+}
+
+.history-list { scrollbar-color: #6b5a4e transparent; }
+
+.dialog-card {
+  border: 1px solid #50534e !important;
+  border-radius: 16px !important;
+  background: #252825 !important;
+  color: #ddd8cf !important;
+  box-shadow: 0 28px 80px rgba(0,0,0,.5) !important;
+}
+
+.start-dialog::backdrop,
+.help-dialog::backdrop {
+  background: rgba(12,14,13,.76);
+  backdrop-filter: blur(5px);
+}
+
+.dialog-dino {
+  border-color: #8f694f !important;
+  background: #322d29 !important;
+  box-shadow: none !important;
+}
+
+.dialog-option {
+  border-color: #41443f !important;
+  background: #202321 !important;
+}
+
+.dialog-close {
+  border-color: #50534e !important;
+  background: #303330 !important;
+  color: #ddd8cf !important;
+}
+
+.toast {
+  border: 1px solid #80614f !important;
+  border-radius: 10px !important;
+  background: #282b28 !important;
+  color: #eee9df !important;
+  box-shadow: 0 14px 35px rgba(0,0,0,.35) !important;
+}
+
+@media (max-width: 820px) {
+  .topbar { border-radius: 10px; }
+  .board-frame { padding: 18px; }
+  .move-layer { inset: 18px; }
+}
