@@ -1,12 +1,13 @@
 /* Final dinosaur chess artwork supplied by the user.
-   The source sheet is normalised into a precise 6 × 2 sprite grid:
-   Pawn, Knight, Bishop, Rook, Queen, King. */
+   The source sheet is rendered as a normal image and cropped inside each piece.
+   This avoids browser issues with SVG files used through CSS pseudo-element backgrounds. */
 
 .piece {
   position: relative;
   width: 112%;
   height: 118%;
   display: block;
+  overflow: hidden;
   transform: translateY(-5%);
   filter: drop-shadow(0 7px 5px rgba(0, 0, 0, .46));
   pointer-events: none;
@@ -18,39 +19,23 @@
   display: none !important;
 }
 
+.piece::before,
 .piece::after {
   display: none !important;
 }
 
-.piece::before {
-  content: "";
+.piece-art {
   position: absolute;
-  inset: 0;
-  display: block !important;
-  border: 0;
-  border-radius: 0;
-  background-color: transparent;
-  background-image: url("assets/dino-pieces-final.svg");
-  background-repeat: no-repeat;
-  background-size: 600% 200%;
-  box-shadow: none;
+  display: block;
+  width: 600%;
+  height: 200%;
+  max-width: none;
+  left: calc(var(--piece-col) * -100%);
+  top: calc(var(--piece-row) * -100%);
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
 }
-
-/* Ivory Herd — top row */
-.piece.white[data-type="p"]::before { background-position: 0% 0%; }
-.piece.white[data-type="n"]::before { background-position: 20% 0%; }
-.piece.white[data-type="b"]::before { background-position: 40% 0%; }
-.piece.white[data-type="r"]::before { background-position: 60% 0%; }
-.piece.white[data-type="q"]::before { background-position: 80% 0%; }
-.piece.white[data-type="k"]::before { background-position: 100% 0%; }
-
-/* Obsidian Pack — bottom row */
-.piece.black[data-type="p"]::before { background-position: 0% 100%; }
-.piece.black[data-type="n"]::before { background-position: 20% 100%; }
-.piece.black[data-type="b"]::before { background-position: 40% 100%; }
-.piece.black[data-type="r"]::before { background-position: 60% 100%; }
-.piece.black[data-type="q"]::before { background-position: 80% 100%; }
-.piece.black[data-type="k"]::before { background-position: 100% 100%; }
 
 /* Static pieces: only the complete token glides to its destination. */
 .dino-motion,
@@ -62,6 +47,7 @@
 
 .moving-piece {
   transition-duration: 330ms;
+  overflow: hidden;
 }
 
 .moving-piece.running {
@@ -70,23 +56,23 @@
 
 .moving-piece .piece {
   width: 100%;
-  height: 118%;
+  height: 100%;
+  transform: none;
 }
 
 .roster-icon {
-  overflow: visible;
+  overflow: hidden;
 }
 
 .roster-icon .piece {
-  width: 132%;
-  height: 132%;
-  transform: translate(-12%, -13%);
-  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .4));
+  width: 126%;
+  height: 126%;
+  transform: translate(-10%, -11%);
 }
 
 @media (max-width: 560px) {
   .piece {
-    width: 116%;
-    height: 122%;
+    width: 114%;
+    height: 120%;
   }
 }
