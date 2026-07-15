@@ -1,7 +1,7 @@
     } else if (selected) {
       statusText.textContent = `${selectedMoves.length} legal path${selectedMoves.length === 1 ? "" : "s"}`;
     } else {
-      statusText.textContent = "Select a dinosaur";
+      statusText.textContent = "Select a piece";
     }
   }
 
@@ -33,7 +33,7 @@
   function announceResult() {
     if (game.result.type === "checkmate") {
       playTone(game.result.winner === playerColor ? "win" : "loss");
-      showToast(game.result.winner === playerColor ? "Your herd rules the board!" : "The computer pack has checkmated your T-Rex.", 4200);
+      showToast(game.result.winner === playerColor ? "Your herd rules the board!" : "The computer pack has checkmated your Brachiosaurus.", 4200);
     } else {
       playTone("draw");
       showToast("The expedition ends in a draw.", 3500);
@@ -94,7 +94,7 @@
   function renderRoster() {
     $("#roster").innerHTML = DINO_ORDER.map((type) => `<div class="roster-item">
       <div class="roster-icon">${pieceHTML({ type, color: "w" })}</div>
-      <div><strong>${PIECE_NAMES[type]}</strong><span>${ROLE_NAMES[type]}</span></div>
+      <div><strong>${DINO_NAMES[type]}</strong><span>${ROLE_NAMES[type]}</span></div>
       <div class="roster-code">${ROLE_RUNES[type]}</div>
     </div>`).join("");
   }
