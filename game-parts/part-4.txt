@@ -1,7 +1,18 @@
+  const DINO_NAMES = {
+    k: "Brachiosaurus",
+    q: "T-Rex",
+    r: "Triceratops",
+    b: "Pterodactyl",
+    n: "Parasaurolophus",
+    p: "Dinosaur Egg"
+  };
+
   function pieceHTML(p) {
-    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" title="${PIECE_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
-      ${dinosaurSVG(p.type)}
-      <span class="role-rune">${ROLE_RUNES[p.type]}</span>
+    const symbolId = `piece-${p.color}-${p.type}`;
+    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
+      <svg class="piece-svg" viewBox="0 0 100 120" aria-hidden="true" focusable="false">
+        <use href="assets/dino-pieces.svg#${symbolId}"></use>
+      </svg>
     </div>`;
   }
 
@@ -36,7 +47,7 @@
       const p = game.board[r][c];
       if (p) {
         square.innerHTML = pieceHTML(p);
-        square.setAttribute("aria-label", `${coordToSquare(r, c)} ${colorName(p.color)} ${PIECE_NAMES[p.type]} ${ROLE_NAMES[p.type]}`);
+        square.setAttribute("aria-label", `${coordToSquare(r, c)} ${colorName(p.color)} ${DINO_NAMES[p.type]} ${ROLE_NAMES[p.type]}`);
       }
 
       const visualRow = Math.floor(index / 8);
@@ -163,6 +174,6 @@
     if (thinkingIndicator.hidden === false) {
       statusText.textContent = "Computer is choosing a trail";
     } else if (check) {
-      statusText.textContent = "The T-Rex is in check";
+      statusText.textContent = "The Brachiosaurus is in check";
     } else if (game.turn !== playerColor) {
       statusText.textContent = "Waiting for the computer";
