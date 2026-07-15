@@ -7,8 +7,14 @@
     p: "Dinosaur Egg"
   };
 
+  const PIECE_COLUMNS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 };
+
   function pieceHTML(p) {
-    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}"></div>`;
+    const column = PIECE_COLUMNS[p.type];
+    const row = p.color === "w" ? 0 : 1;
+    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" style="--piece-col:${column};--piece-row:${row}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
+      <img class="piece-art" src="assets/dino-pieces-final.svg" alt="" draggable="false" />
+    </div>`;
   }
 
   function displayedCoords(index) {
