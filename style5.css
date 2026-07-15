@@ -1,6 +1,6 @@
 /* Final dinosaur chess artwork supplied by the user.
    The source sheet is rendered as a normal image and cropped inside each piece.
-   This avoids browser issues with SVG files used through CSS pseudo-element backgrounds. */
+   The Ivory pawn is currently being tested as a separate individual SVG file. */
 
 .piece {
   position: relative;
@@ -37,6 +37,22 @@
   pointer-events: none;
 }
 
+/* Direct-file test: only the Ivory Dinosaur Egg pawn uses this. */
+.individual-piece {
+  overflow: visible;
+  display: grid;
+  place-items: center;
+}
+
+.individual-piece-art {
+  display: block;
+  width: 86%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
 /* Static pieces: only the complete token glides to its destination. */
 .dino-motion,
 .moving-piece.running .dino-motion,
@@ -60,6 +76,10 @@
   transform: none;
 }
 
+.moving-piece .individual-piece {
+  overflow: visible;
+}
+
 .roster-icon {
   overflow: hidden;
 }
@@ -70,9 +90,17 @@
   transform: translate(-10%, -11%);
 }
 
+.roster-icon .individual-piece-art {
+  width: 82%;
+}
+
 @media (max-width: 560px) {
   .piece {
     width: 114%;
     height: 120%;
+  }
+
+  .individual-piece-art {
+    width: 88%;
   }
 }
