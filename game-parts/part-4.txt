@@ -48,7 +48,7 @@
   function pieceHTML(p) {
     const pieceFile = PIECE_FILES[p.color][p.type];
     const fallbackFile = PIECE_SVG_FALLBACKS[p.color][p.type];
-    return `<div class="piece ${p.color === "w" ? "white" : "black"} individual-piece" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
+    return `<div class="piece ${p.color === "w" ? "white" : "black"} individual-piece" data-type="${p.type}" data-color="${p.color}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
       <img class="individual-piece-art" src="assets/rendered/${pieceFile}.png?v=20260715" data-fallback="assets/${fallbackFile}" alt="" draggable="false" onerror="this.onerror=null;this.src=this.dataset.fallback" />
     </div>`;
   }
@@ -145,6 +145,56 @@
     });
   }
 
+  function createCaptureEffect(move, boardRect, toSquare) {
+    const capturedPiece = move.enPassant
+      ? game.board[move.fromR][move.toC]
+      : game.board[move.toR][move.toC];
+    if (!capturedPiece) return () => {};
+
+    const capturedCoordinate = move.enPassant
+      ? coordToSquare(move.fromR, move.toC)
+      : move.to;
+    const capturedSquare = boardEl.querySelector(`[data-square="${capturedCoordinate}"]`);
+    const capturedEl = capturedSquare?.querySelector(".piece");
+    if (!capturedSquare || !capturedEl) return () => {};
+
+    const captureRect = capturedSquare.getBoundingClientRect();
+    const isEgg = capturedPiece.type === "p";
+    const effect = document.createElement("div");
+    effect.className = `capture-fx ${capturedPiece.color === "w" ? "ivory" : "obsidian"} ${isEgg ? "egg" : "major"}`;
+    effect.style.left = `${captureRect.left - boardRect.left}px`;
+    effect.style.top = `${captureRect.top - boardRect.top}px`;
+    effect.style.width = `${captureRect.width}px`;
+    effect.style.height = `${captureRect.height}px`;
+
+    const vectors = [
+      [-38, -34, -38, 0],
+      [36, -32, 32, 10],
+      [-46, -4, -52, 18],
+      [44, 0, 48, 26],
+      [-28, 36, -22, 6],
+      [30, 38, 28, 14],
+      [0, -45, 12, 22],
+      [4, 44, -12, 30],
+      [-18, -20, 68, 36],
+      [20, 22, -64, 42]
+    ];
+    const particleCount = isEgg ? 7 : vectors.length;
+    const fragments = vectors.slice(0, particleCount).map(([dx, dy, rotation, delay]) =>
+      `<span class="capture-particle" style="--dx:${dx}%;--dy:${dy}%;--rot:${rotation}deg;--delay:${delay}ms"></span>`
+    ).join("");
+
+    effect.innerHTML = `<span class="impact-ring"></span>${fragments}`;
+    moveLayer.appendChild(effect);
+    capturedEl.classList.add("being-captured", isEgg ? "egg-capture" : "major-capture");
+    toSquare.classList.add("capture-impact");
+
+    return () => {
+      effect.remove();
+      toSquare.classList.remove("capture-impact");
+    };
+  }
+
   function animateMove(move, done) {
     const fromEl = boardEl.querySelector(`[data-square="${move.from}"] .piece`);
     const toSquare = boardEl.querySelector(`[data-square="${move.to}"]`);
@@ -152,9 +202,17 @@
       done();
       return;
     }
+
     const boardRect = boardEl.getBoundingClientRect();
     const fromRect = fromEl.getBoundingClientRect();
     const toRect = toSquare.getBoundingClientRect();
+    const capturedPiece = move.enPassant
+      ? game.board[move.fromR][move.toC]
+      : game.board[move.toR][move.toC];
+    const cleanupCapture = capturedPiece
+      ? createCaptureEffect(move, boardRect, toSquare)
+      : () => {};
+
     const mover = document.createElement("div");
     mover.className = "moving-piece running";
     mover.style.left = `${fromRect.left - boardRect.left}px`;
@@ -164,15 +222,18 @@
     mover.innerHTML = fromEl.outerHTML;
     moveLayer.appendChild(mover);
     fromEl.style.opacity = "0";
+
     const dx = toRect.left - fromRect.left + (toRect.width - fromRect.width) / 2;
     const dy = toRect.top - fromRect.top + (toRect.height - fromRect.height) / 2;
     requestAnimationFrame(() => requestAnimationFrame(() => {
       mover.style.transform = `translate(${dx}px, ${dy}px)`;
     }));
+
     window.setTimeout(() => {
       mover.remove();
+      cleanupCapture();
       done();
-    }, 450);
+    }, capturedPiece ? 590 : 470);
   }
 
   function scheduleAiMove() {
