@@ -8,12 +8,7 @@
   };
 
   function pieceHTML(p) {
-    const symbolId = `piece-${p.color}-${p.type}`;
-    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
-      <svg class="piece-svg" viewBox="0 0 100 120" aria-hidden="true" focusable="false">
-        <use href="assets/dino-pieces.svg#${symbolId}"></use>
-      </svg>
-    </div>`;
+    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}"></div>`;
   }
 
   function displayedCoords(index) {
