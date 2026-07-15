@@ -11,8 +11,9 @@
 
   function pieceHTML(p) {
     const column = PIECE_COLUMNS[p.type];
-    const row = p.color === "w" ? 0 : 1;
-    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" style="--piece-col:${column};--piece-row:${row}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
+    const left = `${column * -100}%`;
+    const top = p.color === "w" ? "0%" : "-100%";
+    return `<div class="piece ${p.color === "w" ? "white" : "black"}" data-type="${p.type}" style="--piece-left:${left};--piece-top:${top}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
       <img class="piece-art" src="assets/dino-pieces-final.svg" alt="" draggable="false" />
     </div>`;
   }
