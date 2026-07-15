@@ -1,31 +1,58 @@
-/* True SVG dinosaur chess pieces */
+/* Final dinosaur chess artwork supplied by the user.
+   The source sheet is normalised into a precise 6 × 2 sprite grid:
+   Pawn, Knight, Bishop, Rook, Queen, King. */
 
 .piece {
   position: relative;
-  width: 104%;
-  height: 112%;
-  display: grid;
-  place-items: end center;
-  transform: translateY(-4%);
+  width: 112%;
+  height: 118%;
+  display: block;
+  transform: translateY(-5%);
   filter: drop-shadow(0 7px 5px rgba(0, 0, 0, .46));
+  pointer-events: none;
 }
 
-.piece::before,
-.piece::after,
 .piece .dino-svg,
+.piece .piece-svg,
 .piece .role-rune {
   display: none !important;
 }
 
-.piece-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
+.piece::after {
+  display: none !important;
 }
 
-/* The pieces are static vector icons. Only the complete chess piece glides. */
+.piece::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: block !important;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: url("assets/dino-pieces-final.svg");
+  background-repeat: no-repeat;
+  background-size: 600% 200%;
+  box-shadow: none;
+}
+
+/* Ivory Herd — top row */
+.piece.white[data-type="p"]::before { background-position: 0% 0%; }
+.piece.white[data-type="n"]::before { background-position: 20% 0%; }
+.piece.white[data-type="b"]::before { background-position: 40% 0%; }
+.piece.white[data-type="r"]::before { background-position: 60% 0%; }
+.piece.white[data-type="q"]::before { background-position: 80% 0%; }
+.piece.white[data-type="k"]::before { background-position: 100% 0%; }
+
+/* Obsidian Pack — bottom row */
+.piece.black[data-type="p"]::before { background-position: 0% 100%; }
+.piece.black[data-type="n"]::before { background-position: 20% 100%; }
+.piece.black[data-type="b"]::before { background-position: 40% 100%; }
+.piece.black[data-type="r"]::before { background-position: 60% 100%; }
+.piece.black[data-type="q"]::before { background-position: 80% 100%; }
+.piece.black[data-type="k"]::before { background-position: 100% 100%; }
+
+/* Static pieces: only the complete token glides to its destination. */
 .dino-motion,
 .moving-piece.running .dino-motion,
 .moving-piece.running .leg,
@@ -43,7 +70,7 @@
 
 .moving-piece .piece {
   width: 100%;
-  height: 112%;
+  height: 118%;
 }
 
 .roster-icon {
@@ -51,15 +78,15 @@
 }
 
 .roster-icon .piece {
-  width: 126%;
-  height: 126%;
-  transform: translate(-10%, -11%);
+  width: 132%;
+  height: 132%;
+  transform: translate(-12%, -13%);
   filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .4));
 }
 
 @media (max-width: 560px) {
   .piece {
-    width: 109%;
-    height: 116%;
+    width: 116%;
+    height: 122%;
   }
 }
