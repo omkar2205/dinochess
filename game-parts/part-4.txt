@@ -10,6 +10,12 @@
   const PIECE_COLUMNS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 };
 
   function pieceHTML(p) {
+    if (p.color === "w" && p.type === "p") {
+      return `<div class="piece white individual-piece" data-type="${p.type}" title="${DINO_NAMES[p.type]} · ${ROLE_NAMES[p.type]}">
+        <img class="individual-piece-art" src="assets/ivory-pawn.svg" alt="" draggable="false" />
+      </div>`;
+    }
+
     const column = PIECE_COLUMNS[p.type];
     const left = `${column * -100}%`;
     const top = p.color === "w" ? "0%" : "-100%";
