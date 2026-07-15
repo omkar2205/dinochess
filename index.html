@@ -11,13 +11,26 @@
   <link rel="stylesheet" href="style5.css" />
   <link rel="stylesheet" href="museum-theme.css" />
   <link rel="stylesheet" href="pawn-scale.css" />
+  <link rel="stylesheet" href="piece-effects.css" />
 </head>
 <body>
   <div class="page-noise" aria-hidden="true"></div>
 
   <header class="topbar">
     <a class="brand" href="#" aria-label="Dino Chess home">
-      <span class="brand-mark" aria-hidden="true">☠</span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg class="claw-mark" viewBox="0 0 64 64" focusable="false">
+          <path class="claw-shadow" d="M17 51 C22 41 27 27 30 12" />
+          <path class="claw-shadow" d="M30 54 C36 42 41 26 43 9" />
+          <path class="claw-shadow" d="M43 51 C49 39 53 27 55 15" />
+          <path class="claw-cut" d="M17 51 C22 41 27 27 30 12" />
+          <path class="claw-cut" d="M30 54 C36 42 41 26 43 9" />
+          <path class="claw-cut" d="M43 51 C49 39 53 27 55 15" />
+          <path class="claw-glint" d="M18 48 C23 38 27 27 29 15" />
+          <path class="claw-glint" d="M31 51 C36 40 40 27 42 13" />
+          <path class="claw-glint" d="M44 48 C49 37 52 28 54 18" />
+        </svg>
+      </span>
       <span>
         <strong>Dino Chess</strong>
         <small>Ancient strategy · Prehistoric power</small>
