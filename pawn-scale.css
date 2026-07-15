@@ -1,0 +1,7 @@
+/* Pawn size override: 60% smaller than the other pieces = 40% of standard size. */
+.piece[data-type="p"] .individual-piece-art {
+  width: 40% !important;
+  height: 40% !important;
+  align-self: end;
+  margin-bottom: 10%;
+}
