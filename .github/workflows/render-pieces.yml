@@ -1,0 +1,47 @@
+name: Render transparent dinosaur pieces
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "assets/*.svg"
+      - "scripts/render_pieces.py"
+      - ".github/workflows/render-pieces.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-dinosaur-pieces
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install renderer
+        run: python -m pip install --disable-pip-version-check cairosvg pillow
+
+      - name: Render and clean all pieces
+        run: python scripts/render_pieces.py
+
+      - name: Commit generated transparent assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/rendered/*.png
+          if git diff --cached --quiet; then
+            echo "No rendered asset changes."
+          else
+            git commit -m "Generate transparent dinosaur pieces [skip ci]"
+            git push
+          fi
